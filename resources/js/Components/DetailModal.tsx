@@ -183,8 +183,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
             onViewMap(data);
           }, 150);
         },
-        variant: 'success',
-        style: { backgroundColor: defaultTheme.secondaryColor }
+        variant: 'primary'
       });
     }
 
@@ -201,8 +200,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
         label: 'Kirim Keluhan',
         icon: 'report_problem',
         href: `${complaintRoute}?${queryString}`,
-        variant: 'danger',
-        style: { backgroundColor: defaultTheme.primaryColor }
+        variant: 'secondary'
       });
     }
 
@@ -219,23 +217,12 @@ const DetailModal: React.FC<DetailModalProps> = ({
         label: 'Kirim Masukan',
         icon: 'feedback',
         href: `${feedbackRoute}?${queryString}`,
-        variant: 'danger',
-        style: { backgroundColor: defaultTheme.primaryColor }
+        variant: 'secondary'
       });
     }
 
     // Custom actions
     builtActions.push(...actions);
-
-    // Close button
-    builtActions.push({
-      id: 'close',
-      label: 'Tutup',
-      icon: 'close',
-      onClick: onClose,
-      variant: 'default',
-      style: { backgroundColor: 'hsl(var(--foreground))' }
-    });
 
     // Download Report button
     builtActions.push({
@@ -243,8 +230,16 @@ const DetailModal: React.FC<DetailModalProps> = ({
       label: 'Download Report',
       icon: 'download',
       onClick: handleDownloadReport,
-      variant: 'danger',
-      style: { backgroundColor: defaultTheme.primaryColor }
+      variant: 'secondary'
+    });
+
+    // Close is visually quieter than the available actions.
+    builtActions.push({
+      id: 'close',
+      label: 'Tutup',
+      icon: 'close',
+      onClick: onClose,
+      variant: 'default'
     });
 
     return builtActions.filter(action => action.show !== false);
@@ -252,13 +247,57 @@ const DetailModal: React.FC<DetailModalProps> = ({
 
   const actionButtons = buildActionButtons();
 
-  // Group actions: primary actions on left, secondary on right
-  const primaryActions = actionButtons.filter(a => 
-    ['view-map', 'feedback', 'complaint'].includes(a.id)
-  );
-  const secondaryActions = actionButtons.filter(a => 
-    !['view-map', 'feedback', 'complaint'].includes(a.id)
-  );
+  const mainActions = actionButtons.filter(action => !['close', 'complaint', 'feedback'].includes(action.id));
+  const responseActions = actionButtons.filter(action => ['complaint', 'feedback'].includes(action.id));
+  const closeAction = actionButtons.find(action => action.id === 'close');
+
+  const actionClassName = (action: DetailAction) => {
+    const base = 'inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-800 focus-visible:ring-offset-2 w-full sm:w-auto';
+    const appearance = action.id === 'view-map'
+      ? 'bg-brand-800 text-white hover:bg-brand-900'
+      : ['complaint', 'feedback'].includes(action.id)
+        ? 'border border-brand-300 bg-white text-brand-800 hover:bg-brand-50'
+        : action.id === 'close'
+          ? 'text-ink-600 hover:text-ink-900'
+          : 'border border-ink-300 bg-white text-ink-900 hover:bg-ink-50';
+
+    return `${base} ${appearance} ${action.className ?? ''}`;
+  };
+
+  const renderAction = (action: DetailAction) => {
+    const content = (
+      <>
+        <span className="material-icons-outlined text-lg" aria-hidden="true">{action.icon}</span>
+        {action.label}
+      </>
+    );
+
+    if (action.href) {
+      return (
+        <Link
+          key={action.id}
+          href={action.href}
+          className={actionClassName(action)}
+          style={action.style}
+          onClick={action.onClick ?? onClose}
+        >
+          {content}
+        </Link>
+      );
+    }
+
+    return (
+      <button
+        key={action.id}
+        type="button"
+        onClick={action.onClick}
+        className={actionClassName(action)}
+        style={action.style}
+      >
+        {content}
+      </button>
+    );
+  };
 
   return (
     <AnimatePresence>
@@ -451,87 +490,26 @@ const DetailModal: React.FC<DetailModalProps> = ({
             </div>
             
             {/* Footer with actions */}
-            <div className="p-3 sm:p-4 border-t flex flex-col gap-2 flex-shrink-0 bg-white">
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-3">
-                {/* Primary actions */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-                  {primaryActions.map(action => {
-                    const buttonContent = (
-                      <>
-                        <span className="material-icons-outlined mr-1">{action.icon}</span>
-                        {action.label}
-                      </>
-                    );
-
-                    if (action.href) {
-                      return (
-                        <Link
-                          key={action.id}
-                          href={action.href}
-                          className="text-white px-4 py-2 rounded-lg flex items-center justify-center hover:opacity-90 w-full sm:w-auto"
-                          style={action.style}
-                          onClick={onClose}
-                        >
-                          {buttonContent}
-                        </Link>
-                      );
-                    }
-
-                    return (
-                      <button
-                        key={action.id}
-                        onClick={action.onClick}
-                        className="text-white px-4 py-2 rounded-lg flex items-center justify-center hover:opacity-90 w-full sm:w-auto"
-                        style={action.style}
-                      >
-                        {buttonContent}
-                      </button>
-                    );
-                  })}
+            <div className="flex flex-shrink-0 flex-col gap-3 border-t bg-white p-3 sm:p-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                  {mainActions.map(renderAction)}
                 </div>
-                
-                {/* Secondary actions */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-                  {secondaryActions.map(action => {
-                    const buttonContent = (
-                      <>
-                        <span 
-                          className="material-icons-outlined mr-1"
-                          style={action.id === 'download' ? { color: defaultTheme.headerIconColor } : {}}
-                        >
-                          {action.icon}
-                        </span>
-                        {action.label}
-                      </>
-                    );
-
-                    if (action.href) {
-                      return (
-                        <Link
-                          key={action.id}
-                          href={action.href}
-                          className="text-white px-4 py-2 rounded-lg flex items-center justify-center hover:opacity-90 w-full sm:w-auto"
-                          style={action.style}
-                          onClick={action.onClick}
-                        >
-                          {buttonContent}
-                        </Link>
-                      );
-                    }
-
-                    return (
-                      <button
-                        key={action.id}
-                        onClick={action.onClick}
-                        className="text-white px-4 py-2 rounded-lg flex items-center justify-center hover:opacity-90 w-full sm:w-auto"
-                        style={action.style}
-                      >
-                        {buttonContent}
-                      </button>
-                    );
-                  })}
-                </div>
+                {closeAction && (
+                  <button
+                    type="button"
+                    onClick={closeAction.onClick}
+                    className={actionClassName(closeAction)}
+                  >
+                    {closeAction.label}
+                  </button>
+                )}
               </div>
+              {responseActions.length > 0 && (
+                <div className="flex flex-col gap-1 border-t border-ink-200 pt-2 sm:flex-row sm:gap-3">
+                  {responseActions.map(renderAction)}
+                </div>
+              )}
             </div>
           </ModalContainer>
         </div>
