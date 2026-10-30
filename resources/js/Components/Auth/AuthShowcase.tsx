@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import RegencyModel, { type ShowcasePoint } from './RegencyModel';
+import CrestOnBrand from '@/Components/CrestOnBrand';
 import { cn } from '@/lib/utils';
 
 /**
@@ -88,22 +89,7 @@ export default function AuthShowcase({ data, className }: AuthShowcaseProps) {
 
             <div className="relative flex h-full flex-col gap-6 px-10 py-9 xl:px-14 xl:py-11">
                 <header className="tt-enter-up flex items-center gap-4">
-                    {/*
-                     * The crest sits on a light plate. It is a full-colour
-                     * emblem with dark outlines drawn for paper, and on a deep
-                     * maroon ground its own outlines disappear into the
-                     * background — the plate is what keeps it legible, and it
-                     * reads as a seal rather than as a patch.
-                     */}
-                    <div className="shrink-0 rounded-xl bg-ink-50 p-2 shadow-lg">
-                        <img
-                            src="/images/kab-smg-logo.webp"
-                            alt="Lambang Kabupaten Semarang"
-                            width={48}
-                            height={48}
-                            className="h-11 w-11 object-contain xl:h-12 xl:w-12"
-                        />
-                    </div>
+                    <CrestOnBrand alt="Lambang Kabupaten Semarang" className="w-16" />
                     <div className="leading-tight">
                         <p className="text-sm font-medium text-brand-200">
                             Sistem Monitoring Infrastruktur

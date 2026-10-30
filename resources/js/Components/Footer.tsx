@@ -1,4 +1,5 @@
 import React from 'react';
+import CrestOnBrand from './CrestOnBrand';
 
 /**
  * Contact icons were pink-400 / blue-400 / green-400 — three decorative hues
@@ -18,15 +19,9 @@ const Footer: React.FC = () => {
   return (
     <footer className="w-full bg-primary text-white">
       {/* Header with Logo and Title */}
-      <div className="px-4 sm:px-6 lg:px-8 py-6 border-b border-white/15">
+      <div className="px-4 sm:px-6 lg:px-8 py-[27px] sm:py-8 border-b border-white/15">
         <div className="flex items-center justify-center gap-3">
-          <div className="p-2 sm:p-3 rounded-lg bg-white">
-            <img
-              src="/images/kab-smg-logo.webp"
-              alt="Logo Kabupaten Semarang"
-              className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
-            />
-          </div>
+          <CrestOnBrand alt="Logo Kabupaten Semarang" className="w-16 sm:w-20" />
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
             TowerTrack
           </h2>

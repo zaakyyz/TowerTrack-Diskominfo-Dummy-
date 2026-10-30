@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useLogoutConfirmation } from '@/Hooks/useLogoutConfirmation';
 import LogoutConfirmDialog from '@/Components/LogoutConfirmDialog';
 import Dropdown from '@/Components/Dropdown';
+import CrestOnBrand from '@/Components/CrestOnBrand';
 import { cn } from '@/lib/utils';
 
 interface AppBarProps {
@@ -145,14 +146,7 @@ const AppBar: React.FC<AppBarProps> = ({ currentPage = '' }) => {
                 convention every reader already expects from a site header and
                 the fix for the duplicate heading. */}
             <div className="flex items-center shrink-0 min-w-0 logo-container">
-              <div className="p-1.5 sm:p-2 rounded-lg shrink-0 bg-white">
-                <img
-                  src="/images/kab-smg-logo.webp"
-                  alt="Kabupaten Semarang"
-                  className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 object-contain"
-                  style={{ minWidth: '24px', minHeight: '24px', maxWidth: '100%' }}
-                />
-              </div>
+              <CrestOnBrand alt="Kabupaten Semarang" className="w-10" />
               {showBackToWeb ? (
                 <Link
                   href="/"

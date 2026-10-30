@@ -438,6 +438,21 @@
 .app-bar .logo-container { display: flex; align-items: center; flex-shrink: 0; }
 .app-bar .truncate-responsive { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* Keep the transparent crest legible against the maroon brand surface. */
+.crest-on-brand {
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.85))
+            drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+}
+.crest-on-brand img { display: block; width: 100%; height: 100%; }
+/* The motto occupies rows 266–280 of the 320×289 transparent asset. */
+.crest-on-brand__shield { clip-path: inset(0 0 8% 0); }
+.crest-on-brand__motto {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(92% 0 2.5% 0);
+    filter: brightness(0) invert(1);
+}
+
 @media (min-width: 640px) and (max-width: 1023px) {
     .app-bar { min-height: 48px; }
     .app-bar .container { max-width: 100%; overflow-x: hidden; }
