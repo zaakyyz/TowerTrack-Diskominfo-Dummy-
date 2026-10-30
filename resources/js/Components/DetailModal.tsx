@@ -751,6 +751,12 @@ export const FoPointDetailModal: React.FC<FoPointDetailModalProps> = ({
       formatValue: (value: any) => value || 'Tidak ada deskripsi'
     },
     { key: 'route_name', label: 'Jalur' },
+    { key: 'area', label: 'Area' },
+    {
+      key: 'status',
+      label: 'Status',
+      formatValue: (value: any) => value ? getFOStatusColor(value).label : 'Belum Terdata'
+    },
     { 
       key: 'sequence_number', 
       label: 'Urutan',
@@ -879,6 +885,7 @@ export const FoPointDetailModal: React.FC<FoPointDetailModalProps> = ({
         location_type: 'fo_point'
       })}
       imageGallery={imageGallery}
+      showDetailSelector={false}
       // No theme override. It used to force #DC2626 — --destructive, the
       // colour this palette reserves for irreversible actions — onto the header
       // and the primary buttons of a read-only detail view, plus #1B5E20, a

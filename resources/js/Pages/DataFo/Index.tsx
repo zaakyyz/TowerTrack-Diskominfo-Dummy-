@@ -185,8 +185,15 @@ export default function DataFoIndex({
   // Handle detailData from Inertia props (when using only: ['detailData'])
   useEffect(() => {
     if (propDetailData && propDetailData.success) {
-      setDetailData(propDetailData);
-      setShowDetailModal(true);
+      if (propDetailData.type === 'point' && propDetailData.data?.point) {
+        setShowDetailModal(false);
+        setDetailData(null);
+        setSelectedFoPoint(propDetailData.data.point);
+        setShowFoPointModal(true);
+      } else if (propDetailData.type === 'route') {
+        setDetailData(propDetailData);
+        setShowDetailModal(true);
+      }
       setDetailLoading(false);
     }
   }, [propDetailData]);
@@ -522,7 +529,7 @@ export default function DataFoIndex({
   };
 
   // Handle detail functionality using Inertia.js standard
-  const handleShowDetail = (type: 'point' | 'route', item: any) => {
+  const handleShowDetail = (type: 'route', item: { id: number }) => {
     setDetailLoading(true);
     setShowDetailModal(true);
     
@@ -564,6 +571,11 @@ export default function DataFoIndex({
     setShowDetailModal(false);
     setDetailData(null);
     setDetailLoading(false);
+  };
+
+  const openFoPointDetail = (point: FoPoint) => {
+    setSelectedFoPoint(point);
+    setShowFoPointModal(true);
   };
 
   const handleViewMap = (point: FoPoint) => {
@@ -1253,11 +1265,7 @@ export default function DataFoIndex({
                        position={[point.latitude, point.longitude]}
                        icon={getIconByImagesAndSide(point.images, point.side_of_road)}
                        eventHandlers={{
-                         click: () => {
-                           console.log('Point clicked:', point.name);
-                           setSelectedFoPoint(point);
-                           setShowFoPointModal(true);
-                         }
+                         click: () => openFoPointDetail(point)
                        }}
                      >
                        <Tooltip 
@@ -1447,7 +1455,7 @@ export default function DataFoIndex({
                filteredPoints={filteredPoints}
                filteredRoutes={filteredRoutes}
                viewMode={viewMode}
-               onPointClick={(point) => handleShowDetail('point', point)}
+               onPointClick={(point) => openFoPointDetail(point as FoPoint)}
                onRouteClick={(route) => handleShowDetail('route', route)}
              />
            </div>

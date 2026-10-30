@@ -108,11 +108,11 @@ export default function FoDetailModal({
                     )}
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold">
-                      Detail {detailData?.type === 'point' ? 'Titik FO' : 'Jalur FO'}
+                    <h3 className="text-xl font-semibold sm:text-2xl">
+                      {detailData?.type === 'route' ? detailData.data.route?.name || 'Detail Jalur FO' : 'Detail Titik FO'}
                     </h3>
                     <p className="text-primary-foreground/80 text-sm mt-1">
-                      {detailData?.type === 'point' ? 'Informasi lengkap titik fiber optik' : 'Informasi lengkap jalur fiber optik'}
+                      {detailData?.type === 'point' ? 'Informasi titik fiber optik' : 'Detail jalur fiber optik'}
                     </p>
                   </div>
                 </div>
@@ -460,9 +460,9 @@ function RouteDetails({
 }) {
   return (
     <div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Informasi Jalur Card */}
-        <div className="rounded-xl p-6 border border-border shadow-sm">
+        <div className="rounded-lg border border-border p-5">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-muted rounded-lg">
               <svg className="w-5 h-5 text-neutral-strong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -471,18 +471,18 @@ function RouteDetails({
             </div>
             <h4 className="text-xl font-bold text-foreground">Informasi Jalur</h4>
           </div>
-          <div className="space-y-4">
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Nama Jalur</label>
+          <div className="divide-y divide-border">
+            <div className="py-3">
+              <span className="text-sm text-muted-foreground">Nama Jalur</span>
               <p className="text-lg font-medium text-foreground mt-1">{route.name}</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-card rounded-lg p-4 border border-border">
-                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Area</label>
+            <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+              <div className="py-3">
+                <span className="text-sm text-muted-foreground">Area</span>
                 <p className="text-base font-medium text-foreground mt-1 capitalize">{route.area}</p>
               </div>
-              <div className="bg-card rounded-lg p-4 border border-border">
-                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Status</label>
+              <div className="py-3">
+                <span className="text-sm text-muted-foreground">Status</span>
                 <div className="mt-1">
                   {(() => {
                     const statusConfig = getFOStatusColor(route.status);
@@ -496,9 +496,9 @@ function RouteDetails({
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-card rounded-lg p-4 border border-border">
-                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Total Titik</label>
+            <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+              <div className="py-3">
+                <span className="text-sm text-muted-foreground">Total Titik</span>
                 <div className="flex items-center space-x-2 mt-1">
                   <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -507,8 +507,8 @@ function RouteDetails({
                   <p className="text-base font-medium text-foreground">{route.total_points} titik</p>
                 </div>
               </div>
-              <div className="bg-card rounded-lg p-4 border border-border">
-                <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Total Jarak</label>
+              <div className="py-3">
+                <span className="text-sm text-muted-foreground">Total Jarak</span>
                 <div className="flex items-center space-x-2 mt-1">
                   <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -517,15 +517,15 @@ function RouteDetails({
                 </div>
               </div>
             </div>
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Warna Jalur</label>
+            <div className="py-3">
+              <span className="text-sm text-muted-foreground">Penanda di Peta</span>
               <div className="flex items-center space-x-3 mt-1">
-                <div className="w-6 h-6 rounded-lg border-2 border-white shadow-sm" style={{ backgroundColor: route.color }}></div>
-                <span className="text-base font-mono text-foreground">{route.color}</span>
+                <span className="h-4 w-4 rounded-full border border-ink-300" style={{ backgroundColor: route.color }} aria-hidden="true"></span>
+                <span className="text-sm text-foreground">Warna jalur pada peta</span>
               </div>
             </div>
-            <div className="bg-card rounded-lg p-4 border border-border">
-              <label className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Deskripsi</label>
+            <div className="py-3">
+              <span className="text-sm text-muted-foreground">Deskripsi</span>
               <p className="text-base text-foreground mt-1 leading-relaxed">
                 {route.description || (
                   <span className="italic text-muted-foreground">Tidak ada deskripsi tersedia</span>
@@ -535,8 +535,8 @@ function RouteDetails({
           </div>
         </div>
         
-        {/* Titik-titik dalam Jalur Card */}
-        <div className="bg-success-soft rounded-lg p-6 border border-success-border">
+        {/* Titik-titik dalam Jalur */}
+        <div className="rounded-lg border border-border p-5">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-muted rounded-lg">
               <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -549,23 +549,19 @@ function RouteDetails({
               <p className="text-sm text-muted-foreground mt-1">{points.length} titik terdaftar</p>
             </div>
           </div>
-          <div className="max-h-80 overflow-y-auto space-y-3 pr-2">
-            {points.map((point: any, index: number) => (
-              <div key={point.id} className="bg-card rounded-lg p-4 border border-border shadow-sm hover:shadow-md transition-colors duration-200 hover:scale-[1.01]">
+          <div className="divide-y divide-border">
+            {points.length === 0 && <p className="py-4 text-sm text-muted-foreground">Belum ada titik pada jalur ini.</p>}
+            {points.map((point: FoPoint) => (
+              <div key={point.id} className="py-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center space-x-3">
-                    <div className="flex items-center justify-center w-8 h-8 bg-muted text-foreground rounded-full text-sm font-bold">
-                  {point.sequence_number}
-                </div>
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground">
+                      {point.sequence_number}
+                    </div>
                     <div>
                       <h5 className="font-bold text-foreground text-lg">{point.name}</h5>
                       <p className="text-sm text-muted-foreground capitalize">{point.type}</p>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                      #{point.sequence_number}
-                    </span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-3">
@@ -577,7 +573,7 @@ function RouteDetails({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {point.images?.isp && (
-                    <span className="inline-flex items-center text-xs bg-destructive-soft text-destructive-strong px-3 py-1 rounded-full font-medium border border-destructive-border">
+                    <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
                       <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
@@ -585,7 +581,7 @@ function RouteDetails({
                     </span>
                   )}
                   {point.images?.pole && (
-                    <span className="inline-flex items-center text-xs bg-success-soft text-success-strong px-3 py-1 rounded-full font-medium border border-success-border">
+                    <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
                       <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
@@ -593,7 +589,7 @@ function RouteDetails({
                     </span>
                   )}
                   {point.images?.junction_box && (
-                    <span className="inline-flex items-center text-xs bg-muted text-neutral-strong px-3 py-1 rounded-full font-medium border border-border">
+                    <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
                       <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                       </svg>

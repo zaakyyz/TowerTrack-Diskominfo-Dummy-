@@ -359,15 +359,11 @@ export default function MyMessagesIndex({
             </div>
           )}
         </div>
-        <div className="hidden flex-shrink-0 md:block">
-          <div className="rounded-lg border border-border bg-muted p-3">
-            <img
-              src="/images/kab-smg-logo.webp"
-              alt="Logo Kabupaten Semarang"
-              className="h-20 w-auto object-contain"
-            />
-          </div>
-        </div>
+        <img
+          src="/images/kab-smg-logo.webp"
+          alt="Logo Kabupaten Semarang"
+          className="hidden h-20 w-auto flex-shrink-0 object-contain md:block"
+        />
       </div>
     </div>
   );
