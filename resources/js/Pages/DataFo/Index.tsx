@@ -820,9 +820,8 @@ export default function DataFoIndex({
       
       {/* Hero. Identical configuration to /data-tower. */}
       <HeroSection
-        eyebrow="Kabupaten Semarang"
         title="Data Jalur Fiber Optic"
-        subtitle="Pantau titik dan jalur fiber optic yang membentuk konektivitas digital di seluruh wilayah kabupaten."
+        subtitle="Pantau titik dan jalur fiber optic yang membentuk konektivitas digital di Kabupaten Semarang."
         variant="brand"
         align="left"
         art={<HeroIsoArt variant="fiber" />}

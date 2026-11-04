@@ -83,14 +83,12 @@ const LandingHero: React.FC<LandingHeroProps> = ({
                             down the page. This is also the pairing the login
                             screen uses, so the two entrances agree.
                         */}
-                        <p className="tt-enter-up">
-                            <span className="inline-flex items-center rounded-full border border-border bg-background px-3.5 py-1.5 text-sm font-semibold text-foreground">
-                                Sistem Monitoring Infrastruktur
-                            </span>
+                        <p className="tt-enter-up text-base font-semibold text-muted-foreground">
+                            Sistem Monitoring Infrastruktur
                         </p>
 
                         <h1
-                            className="tt-enter-up mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+                            className="tt-enter-up mt-3 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
                             style={{ '--tt-delay': '80ms' } as React.CSSProperties}
                         >
                             Setiap menara di Kabupaten Semarang, dalam satu peta

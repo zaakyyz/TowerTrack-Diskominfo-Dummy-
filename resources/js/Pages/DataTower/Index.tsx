@@ -251,9 +251,8 @@ export default function DataTowerIndex({
       
       {/* Hero. Shared layout with /data-fo keeps both public data pages aligned. */}
       <HeroSection
-        eyebrow="Kabupaten Semarang"
         title="Data Menara Telekomunikasi"
-        subtitle="Pantau sebaran menara, jangkauan, dan perizinan infrastruktur telekomunikasi dalam satu tempat."
+        subtitle="Pantau sebaran, jangkauan, dan perizinan menara telekomunikasi di Kabupaten Semarang dalam satu tempat."
         variant="brand"
         align="left"
         art={<HeroIsoArt variant="tower" />}
