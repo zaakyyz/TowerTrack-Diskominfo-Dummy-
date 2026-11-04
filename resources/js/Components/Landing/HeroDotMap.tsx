@@ -81,8 +81,8 @@ const OWNER_FILL = [
 
 /** Height in metres to dot radius in viewBox units. Sub-linear so a 120m mast does not become a blob. */
 function radiusFor(height: number): number {
-    if (height <= 0) return 2.1;
-    return 2.1 + Math.min(Math.sqrt(height) * 0.42, 4.6);
+    if (height <= 0) return 2.5;
+    return 2.5 + Math.min(Math.sqrt(height) * 0.42, 4.6);
 }
 
 /**
@@ -239,8 +239,8 @@ const HeroDotMap: React.FC<HeroDotMapProps> = ({ points, owners, className }) =>
                             fillRule="evenodd"
                             fill="none"
                             stroke="hsl(var(--primary))"
-                            strokeOpacity={0.35}
-                            strokeWidth={1.4}
+                            strokeOpacity={0.55}
+                            strokeWidth={1.6}
                         />
 
                         {/* Backhaul arcs. */}
@@ -272,7 +272,8 @@ const HeroDotMap: React.FC<HeroDotMapProps> = ({ points, owners, className }) =>
                                 cy={p.y}
                                 r={radiusFor(p.height)}
                                 fill={OWNER_FILL[p.owner] ?? OWNER_FILL[5]}
-                                fillOpacity={0.9}
+                                stroke="hsl(var(--background))"
+                                strokeWidth={0.9}
                                 style={
                                     {
                                         // Spread by POSITION, not array index, so the
@@ -331,10 +332,10 @@ const HeroDotMap: React.FC<HeroDotMapProps> = ({ points, owners, className }) =>
             {geometry && owners.length > 0 && (
                 <ul className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5 px-2">
                     {owners.map((name, i) => (
-                        <li key={name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <li key={name} className="flex items-center gap-1.5 text-sm text-muted-foreground">
                             <span
                                 aria-hidden="true"
-                                className="h-2 w-2 shrink-0 rounded-full"
+                                className="h-2.5 w-2.5 shrink-0 rounded-full"
                                 style={{ background: OWNER_FILL[i] ?? OWNER_FILL[5] }}
                             />
                             {name}
