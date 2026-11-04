@@ -44,7 +44,7 @@ interface HeroSectionProps {
  * page is the one ground they sit on without fighting it.
  */
 const EYEBROW_CLASSES = {
-  brand: 'border-primary-border bg-primary-soft text-primary-strong',
+  brand: 'border-border bg-background text-foreground',
   neutral: 'border-border bg-muted text-muted-foreground',
   success: 'border-success-border bg-success-soft text-success-strong',
   warning: 'border-warning-border bg-warning-soft text-warning-strong',
@@ -101,7 +101,7 @@ const HeroSection: React.FC<HeroSectionProps> = React.memo<HeroSectionProps>((
               <div className={cn(isCenter && 'flex justify-center')}>
                 <span
                   className={cn(
-                    'tt-enter-up inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium tracking-wide',
+                    'tt-enter-up inline-flex items-center rounded-full border px-3.5 py-1.5 text-sm font-semibold',
                     EYEBROW_CLASSES[variant],
                   )}
                 >
