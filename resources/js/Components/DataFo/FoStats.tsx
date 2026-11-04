@@ -1,5 +1,4 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
 
 interface FoPoint {
   id: number;
@@ -28,7 +27,7 @@ interface FoStatsProps {
  * The three figures used to be brand red, dark green and blue — three different
  * hues for three counts that carry no status between them. "Total Jalur FO"
  * being green implied those routes were healthy, which the number does not say.
- * The figure is neutral now; the icon tile is the only accent.
+ * Figures and icons use neutral colours so the summary reads as data.
  */
 interface FoTileProps {
   label: string;
@@ -39,9 +38,9 @@ interface FoTileProps {
 function FoTile({ label, value, icon }: FoTileProps) {
   return (
     <div className="tt-enter-up flex items-center gap-3 bg-card p-4">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+      <span className="flex shrink-0 text-muted-foreground">
         {icon}
-      </div>
+      </span>
       <div className="flex min-w-0 items-baseline gap-2">
         <span className="text-2xl font-semibold leading-none tracking-tight text-foreground tabular-nums">
           {value}
