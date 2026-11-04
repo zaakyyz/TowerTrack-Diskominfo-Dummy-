@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useId } from 'react';
 import TowerSearchInput from '@/Components/TowerSearchInput';
 import LeafletMap from '@/Components/LeafletMap';
 import { Tower as BaseTower, filterTowers } from '@/utils/searchUtils';
@@ -74,6 +74,7 @@ export default function LocationSelectionInput({
   const [selectionMode, setSelectionMode] = useState<'search' | 'map'>('search');
   const [searchTerm, setSearchTerm] = useState('');
   const [mapFilter, setMapFilter] = useState<MapFilterType>('all');
+  const locationLabelId = useId();
 
   // Combine all locations
   const allLocations = useMemo(() => {
@@ -249,9 +250,9 @@ export default function LocationSelectionInput({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-foreground font-medium mb-2">
+        <div id={locationLabelId} className="block text-foreground font-medium mb-2">
           {label} {required && <span className="text-destructive">*</span>}
-        </label>
+        </div>
       )}
 
       {/* Mode toggle — a segmented control on the inset ground. A solid fill
@@ -324,6 +325,8 @@ export default function LocationSelectionInput({
       {/* Selection Interface */}
       {selectionMode === 'search' ? (
         <TowerSearchInput
+          label=""
+          ariaLabelledBy={locationLabelId}
           towers={searchableLocations}
           selectedTowerId={selectedLocationId}
           selectedTowerDisplay={selectedLocationDisplay}

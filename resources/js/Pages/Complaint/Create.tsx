@@ -6,6 +6,7 @@ import LocationSelectionInput from '@/Components/LocationSelectionInput';
 import FileUpload from '@/Components/FileUpload';
 import AlertDialog from '@/Components/AlertDialog';
 import PageHeader from '@/Components/PageHeader';
+import FormValidationSummary from '@/Components/Forms/FormValidationSummary';
 import AnimatedButton from '@/Components/AnimatedButton';
 import TurnstileCaptcha, { TurnstileCaptchaRef } from '@/Components/TurnstileCaptcha';
 import { Button } from '@/Components/ui/button';
@@ -74,6 +75,8 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
     email: isAuthenticatedUser ? (auth?.user?.email || '') : INITIAL_FORM_STATE.email
   });
   const [validation, setValidation] = useState(INITIAL_VALIDATION_STATE);
+  const [showValidationSummary, setShowValidationSummary] = useState(false);
+  const validationSummaryRef = useRef<HTMLDivElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOtherCategory, setIsOtherCategory] = useState(false);
@@ -319,18 +322,6 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
     setForm(prev => ({ ...prev, kategori: "" }));
   }, []);
 
-  const resetForm = useCallback(() => {
-    setForm({
-      ...INITIAL_FORM_STATE,
-      nama: isAuthenticatedUser ? (auth?.user?.name || '') : INITIAL_FORM_STATE.nama,
-      email: isAuthenticatedUser ? (auth?.user?.email || '') : INITIAL_FORM_STATE.email
-    });
-    setFiles([]);
-    setIsOtherCategory(false);
-    setValidation(INITIAL_VALIDATION_STATE);
-    setShowDialog(false);
-  }, [isAuthenticatedUser, auth?.user?.name, auth?.user?.email]);
-
   const handleDialogClose = useCallback(() => {
     setShowDialog(false);
   }, []);
@@ -340,9 +331,11 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
 
     // Validate form
     if (!validateForm()) {
-      showErrorDialog('Form Tidak Lengkap', 'Silakan lengkapi semua field yang wajib diisi dengan benar');
+      setShowValidationSummary(true);
+      requestAnimationFrame(() => validationSummaryRef.current?.focus());
       return;
     }
+    setShowValidationSummary(false);
 
     // Validate private message access for guest users
     if (!form.is_public && !isAuthenticatedUser) {
@@ -608,7 +601,7 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
             errorMessage = 'Pesan terlalu panjang atau mengandung karakter yang tidak diizinkan.';
           } else if (errors['foto.0'] || errors['assets.0']) {
             errorTitle = 'File Tidak Valid';
-            errorMessage = 'File yang diupload tidak valid. Pastikan file berformat JPG, PNG, atau MP4 dan ukuran maksimal 100MB.';
+            errorMessage = 'File tidak valid. Periksa format dan pastikan ukuran tiap file tidak melebihi 50 MB.';
           } else {
             // Generic error message for other cases
             errorMessage = Object.values(errors).join('. ');
@@ -637,16 +630,16 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
     <MainLayout title="Form Keluhan" currentPage="/complaint">
       <Head title="Form Keluhan" />
 
-      <div className="p-3 sm:p-4 md:p-6">
+      <div className="mx-auto w-full max-w-5xl py-3 sm:py-5">
         <PageHeader
-          title={isAuthenticatedUser ? 'Form Keluhan - Sampaikan Keluhan Anda' : 'Guest Complain - Sampaikan Keluhan Anda'}
-          description="Silakan isi form di bawah ini untuk menyampaikan keluhan atau laporan terkait menara telekomunikasi"
-          showLogo
+          title="Kirim Keluhan"
+          description="Sampaikan keluhan terkait menara atau jaringan fiber optik di Kabupaten Semarang."
+          showLogo={false}
         />
 
         <div className="bg-card rounded-lg border border-border shadow-xs">
           <div className="p-3 sm:p-4 md:p-6">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-foreground mb-4 sm:mb-6">Form Keluhan</h2>
+            <p className="mb-5 text-sm text-muted-foreground">Kolom bertanda <span className="text-destructive">*</span> wajib diisi.</p>
 
             {isAuthenticatedUser && (
               <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-info-soft border border-info-border rounded-lg">
@@ -668,14 +661,18 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
             )}
 
             <form onSubmit={handleSubmit} noValidate>
+              {showValidationSummary && <FormValidationSummary ref={validationSummaryRef} validation={validation} />}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
                 <div>
-                  <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                  <label htmlFor="complaint-name" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                     Nama Lengkap <span className="text-destructive">*</span>
                   </label>
                   <input
+                    id="complaint-name"
                     type="text"
                     name="nama"
+                    aria-invalid={validation.nama}
+                    aria-describedby={validation.nama ? 'complaint-name-error' : undefined}
                     value={isAuthenticatedUser ? (auth?.user?.name || '') : form.nama}
                     onChange={handleChange}
                     className={cn(
@@ -689,25 +686,28 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                     readOnly={isAuthenticatedUser}
                   />
                   {validation.nama && (
-                    <p className="text-destructive text-xs sm:text-sm mt-1">Nama lengkap harus diisi</p>
+                    <p id="complaint-name-error" className="text-destructive text-xs sm:text-sm mt-1">Nama lengkap harus diisi</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                  <label htmlFor="complaint-phone" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                     No. Telepon <span className="text-destructive">*</span>
                   </label>
                   <input
+                    id="complaint-phone"
                     type="tel"
                     name="telepon"
+                    aria-invalid={validation.telepon}
+                    aria-describedby={validation.telepon ? 'complaint-phone-error' : undefined}
                     value={form.telepon}
                     onChange={handleChange}
                     className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.telepon ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-2.5 sm:p-3 text-sm sm:text-base`}
                     placeholder="Masukkan nomor telepon"
-                    maxLength={15}
+                    maxLength={20}
                   />
                   {validation.telepon && (
-                    <p className="text-destructive text-xs sm:text-sm mt-1">
+                    <p id="complaint-phone-error" className="text-destructive text-xs sm:text-sm mt-1">
                       {!form.telepon.trim()
                         ? 'Nomor telepon harus diisi'
                         : 'Format nomor telepon tidak valid. Gunakan format: 08xx, 628xx, atau +628xx'}
@@ -717,12 +717,15 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
 
                 {!isAuthenticatedUser && (
                   <div>
-                    <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                    <label htmlFor="complaint-email" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                       Email <span className="text-destructive">*</span>
                     </label>
                     <input
+                      id="complaint-email"
                       type="email"
                       name="email"
+                      aria-invalid={validation.email}
+                      aria-describedby={validation.email ? 'complaint-email-error' : undefined}
                       value={form.email}
                       onChange={handleChange}
                       className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.email ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-2.5 sm:p-3 text-sm sm:text-base`}
@@ -730,18 +733,18 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                       maxLength={100}
                     />
                     {validation.email && (
-                      <p className="text-destructive text-xs sm:text-sm mt-1">Email harus diisi dengan format yang valid</p>
+                      <p id="complaint-email-error" className="text-destructive text-xs sm:text-sm mt-1">Email harus diisi dengan format yang valid</p>
                     )}
                   </div>
                 )}
 
-                <div className="md:col-span-2">
-                  <label className="block text-foreground font-medium mb-2 sm:mb-3 text-sm sm:text-base">
-                    Tipe Laporan <span className="text-destructive">*</span>
-                  </label>
+                <fieldset className="md:col-span-2">
+                  <legend className="text-foreground font-medium mb-2 text-sm sm:text-base">
+                    Jenis Infrastruktur <span className="text-destructive">*</span>
+                  </legend>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       form.location_type_filter === 'tower'
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -763,13 +766,13 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                       <div className="ml-2 sm:ml-3 flex-1">
                         <div className="font-medium text-foreground text-sm sm:text-base">Menara</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                          Pilih lokasi tower untuk laporan
+                          Pilih menara yang terkait
                         </div>
                       </div>
                     </label>
 
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       form.location_type_filter === 'fo_point'
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -791,20 +794,20 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                       <div className="ml-2 sm:ml-3 flex-1">
                         <div className="font-medium text-foreground text-sm sm:text-base">Fiber Optik</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                          Pilih lokasi FO Point untuk laporan
+                          Pilih titik fiber optik yang terkait
                         </div>
                       </div>
                     </label>
                   </div>
-                </div>
+                </fieldset>
 
-                <div className="md:col-span-2">
-                  <label className="block text-foreground font-medium mb-2 sm:mb-3 text-sm sm:text-base">
-                    Visibilitas Laporan <span className="text-destructive">*</span>
-                  </label>
+                <fieldset className="md:col-span-2">
+                  <legend className="text-foreground font-medium mb-2 text-sm sm:text-base">
+                    Visibilitas Keluhan <span className="text-destructive">*</span>
+                  </legend>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       form.is_public
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -818,15 +821,15 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                         className="mt-1 sm:mt-0 text-primary accent-primary"
                       />
                       <div className="ml-2 sm:ml-3 flex-1">
-                        <div className="font-medium text-foreground text-sm sm:text-base">Terbuka (Public)</div>
+                        <div className="font-medium text-foreground text-sm sm:text-base">Publik</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                          Keluhan dapat dilihat oleh pengguna lain. Membantu transparansi dan berbagi informasi.
+                          Keluhan dapat dilihat pengguna lain.
                         </div>
                       </div>
                     </label>
 
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       !form.is_public
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -853,24 +856,27 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                         className="mt-1 sm:mt-0 text-primary accent-primary"
                       />
                       <div className="ml-2 sm:ml-3 flex-1">
-                        <div className="font-medium text-foreground text-sm sm:text-base">Tertutup (Private)</div>
+                        <div className="font-medium text-foreground text-sm sm:text-base">Privat</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
                           {isAuthenticatedUser
                             ? 'Hanya Anda dan admin yang dapat melihat keluhan ini.'
-                            : 'Pesan private hanya tersedia untuk pengguna yang sudah login. Silakan daftar atau login terlebih dahulu.'}
+                            : 'Masuk untuk mengirim keluhan privat.'}
                         </div>
                       </div>
                     </label>
                   </div>
-                </div>
+                </fieldset>
 
                 <div>
-                  <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                  <label htmlFor="complaint-category" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                     Kategori Keluhan <span className="text-destructive">*</span>
                   </label>
                   {!isOtherCategory ? (
                     <select
+                      id="complaint-category"
                       name="kategori"
+                      aria-invalid={validation.kategori}
+                      aria-describedby={validation.kategori ? 'complaint-category-error' : undefined}
                       value={form.kategori}
                       onChange={handleCategoryChange}
                       className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.kategori ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 text-sm sm:text-base p-2.5 sm:p-3`}
@@ -884,8 +890,11 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                   ) : (
                     <div className="flex gap-2">
                       <input
+                        id="complaint-category"
                         type="text"
                         name="kategori"
+                        aria-invalid={validation.kategori}
+                        aria-describedby={validation.kategori ? 'complaint-category-error' : undefined}
                         value={form.kategori}
                         onChange={handleChange}
                         className={`flex-1 rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.kategori ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-3`}
@@ -902,7 +911,7 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                     </div>
                   )}
                   {validation.kategori && (
-                    <p className="text-destructive text-sm mt-1">Kategori harus dipilih</p>
+                    <p id="complaint-category-error" className="text-destructive text-sm mt-1">Kategori harus dipilih</p>
                   )}
                 </div>
               </div>
@@ -915,12 +924,16 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                 selectedLocationType={form.reportable_type === 'App\\Models\\Tower' ? 'tower' : form.reportable_type === 'App\\Models\\FoPoint' ? 'fo_point' : undefined}
                 onLocationSelect={handleLocationSelect}
                 onClear={handleLocationClear}
-                label={form.location_type_filter === 'tower' ? "Lokasi Tower" : "Lokasi FO Point"}
+                label={form.location_type_filter === 'tower' ? "Lokasi Menara" : "Titik Fiber Optik"}
                 required={true}
                 error={validation.lokasi_tower}
                 errorMessage="Lokasi harus dipilih"
                 className="mb-6"
               />
+
+              <p className="mb-5 text-sm text-muted-foreground">
+                Saat Anda mengirim keluhan, browser akan meminta izin lokasi perangkat untuk memverifikasi kedekatan dengan lokasi yang dipilih. Koordinat yang berhasil diperoleh dicatat untuk proses verifikasi.
+              </p>
 
               <FileUpload
                 files={files}
@@ -930,11 +943,14 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
               />
 
               <div className="mb-4 sm:mb-6">
-                <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                <label htmlFor="complaint-message" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                   Pesan/Keluhan <span className="text-destructive">*</span>
                 </label>
                 <textarea
+                  id="complaint-message"
                   name="pesan"
+                  aria-invalid={validation.pesan}
+                  aria-describedby={validation.pesan ? 'complaint-message-error' : undefined}
                   value={form.pesan}
                   onChange={handleChange}
                   className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.pesan ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-2.5 sm:p-3 resize-vertical text-sm sm:text-base`}
@@ -944,7 +960,7 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                   minLength={10}
                 />
                 {validation.pesan && (
-                  <p className="text-destructive text-xs sm:text-sm mt-1">Pesan harus diisi</p>
+                  <p id="complaint-message-error" className="text-destructive text-xs sm:text-sm mt-1">Pesan harus diisi</p>
                 )}
                 <p className="text-muted-foreground text-xs sm:text-sm mt-1">
                   {form.pesan.length}/1000 karakter
@@ -967,27 +983,12 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-2 sm:gap-3 md:gap-4">
                 <AnimatedButton
-                  type="button"
-                  variant="secondary"
-                  size="md"
-                  animation="scale"
-                  onClick={resetForm}
-                  disabled={isSubmitting}
-                >
-                  Reset
-                </AnimatedButton>
-                <AnimatedButton
                   type="submit"
                   variant="primary"
                   size="md"
                   animation="scale"
                   loading={isSubmitting}
                   disabled={isSubmitting || (!isAuthenticatedUser && !captchaToken)}
-                  icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                  }
                 >
                   {isSubmitting ? 'Mengirim...' : 'Kirim Keluhan'}
                 </AnimatedButton>

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 
 interface FileUploadProps {
   files: File[];
@@ -20,12 +20,20 @@ export default function FileUpload({
   maxSizeBytes = 50 * 1024 * 1024, // 50MB
   acceptedTypes = ['image/jpeg', 'image/png', 'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'],
   acceptedExtensions = ['.jpg', '.jpeg', '.png', '.mp4', '.mov', '.avi', '.mkv'],
-  label = "Upload Foto/Video (opsional)",
+  label = "Lampiran foto/video (opsional)",
   required = false,
   className = "",
   onError
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadId = useId();
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [files]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
@@ -86,7 +94,7 @@ export default function FileUpload({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const getFileIcon = (file: File) => {
+  const getFileIcon = (file: File, index: number) => {
     // Check if it's an image
     const isImage = file.type.startsWith('image/') || ['.jpg', '.jpeg', '.png'].some(ext => file.name.toLowerCase().endsWith(ext));
     // Check if it's a video
@@ -95,8 +103,8 @@ export default function FileUpload({
     if (isImage) {
       return (
         <img 
-          src={URL.createObjectURL(file)} 
-          alt={`Preview`}
+          src={previewUrls[index]}
+          alt={`Pratinjau ${file.name}`}
           className="w-full h-full object-cover" 
         />
       );
@@ -108,7 +116,7 @@ export default function FileUpload({
             preload="metadata"
             muted
           >
-            <source src={`${URL.createObjectURL(file)}#t=0.1`} type={file.type} />
+            <source src={`${previewUrls[index]}#t=0.1`} type={file.type} />
           </video>
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -131,18 +139,19 @@ export default function FileUpload({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-foreground font-medium mb-2">
+        <label htmlFor={uploadId} className="block text-foreground font-medium mb-2">
           {label} {required && <span className="text-destructive-strong">*</span>}
         </label>
       )}
       
       <div className="flex items-center flex-wrap gap-3">
-        <label className="flex items-center justify-center px-4 py-2 bg-muted text-foreground rounded-lg cursor-pointer hover:bg-border-strong transition-colors">
-          <span>Pilih File</span>
+        <label htmlFor={uploadId} className="flex items-center justify-center px-4 py-2 bg-muted text-foreground rounded-lg cursor-pointer hover:bg-border-strong transition-colors focus-within:ring-2 focus-within:ring-primary">
+          <span>Pilih file</span>
           <input 
+            id={uploadId}
             type="file" 
             accept={acceptedExtensions.join(',')} 
-            className="hidden" 
+            className="sr-only"
             onChange={handleFileChange}
             ref={fileInputRef}
             multiple
@@ -162,9 +171,9 @@ export default function FileUpload({
       {files.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-3">
           {files.map((file, index) => (
-            <div key={index} className="relative group">
+            <div key={index} className="relative group w-24">
               <div className="w-20 h-20 rounded overflow-hidden border border-input">
-                {getFileIcon(file)}
+                {getFileIcon(file, index)}
               </div>
               
               <div className="absolute -top-2 -right-2 flex gap-1">
@@ -176,15 +185,15 @@ export default function FileUpload({
                   onClick={() => removeFile(index)}
                   className="bg-destructive text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-destructive transition-colors shadow"
                   title="Hapus file"
+                  aria-label={`Hapus file ${file.name}`}
                 >
                   ×
                 </button>
               </div>
               
-              {/* File info tooltip on hover */}
-              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <div className="truncate">{file.name}</div>
-                <div className="text-muted-foreground">{formatFileSize(file.size)}</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                <div className="truncate text-foreground" title={file.name}>{file.name}</div>
+                <div>{formatFileSize(file.size)}</div>
               </div>
             </div>
           ))}

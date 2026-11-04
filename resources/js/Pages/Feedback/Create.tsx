@@ -6,6 +6,7 @@ import FileUpload from '@/Components/FileUpload';
 import LocationSelectionInput from '@/Components/LocationSelectionInput';
 import AlertDialog from '@/Components/AlertDialog';
 import PageHeader from '@/Components/PageHeader';
+import FormValidationSummary from '@/Components/Forms/FormValidationSummary';
 import AnimatedButton from '@/Components/AnimatedButton';
 import TurnstileCaptcha, { TurnstileCaptchaRef } from '@/Components/TurnstileCaptcha';
 import { Button } from '@/Components/ui/button';
@@ -89,6 +90,8 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
 
 
   const [validation, setValidation] = useState(INITIAL_VALIDATION_STATE);
+  const [showValidationSummary, setShowValidationSummary] = useState(false);
+  const validationSummaryRef = useRef<HTMLDivElement>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOtherCategory, setIsOtherCategory] = useState(false);
@@ -331,18 +334,6 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
     return !Object.values(newValidation).some(Boolean);
   }, [form, isAuthenticatedUser]);
 
-  const resetForm = useCallback(() => {
-    setForm({
-      ...INITIAL_FORM_STATE,
-      nama: isAuthenticatedUser ? (auth?.user?.name || '') : INITIAL_FORM_STATE.nama,
-      email: isAuthenticatedUser ? (auth?.user?.email || '') : INITIAL_FORM_STATE.email
-    });
-    setFiles([]);
-    setIsOtherCategory(false);
-    setValidation(INITIAL_VALIDATION_STATE);
-    setShowDialog(false);
-  }, [isAuthenticatedUser, auth?.user?.name, auth?.user?.email]);
-
   const handleDialogClose = useCallback(() => {
     setShowDialog(false);
   }, []);
@@ -409,9 +400,11 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
 
     // Validate form
     if (!validateForm()) {
-      showErrorDialog('Form Tidak Lengkap', 'Silakan lengkapi semua field yang wajib diisi dengan benar');
+      setShowValidationSummary(true);
+      requestAnimationFrame(() => validationSummaryRef.current?.focus());
       return;
     }
+    setShowValidationSummary(false);
 
     // Validate private message access for guest users
     if (!form.is_public && !isAuthenticatedUser) {
@@ -647,7 +640,7 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
             errorMessage = 'Pesan terlalu panjang atau mengandung karakter yang tidak diizinkan.';
           } else if (errors['assets.0'] || errors['foto.0']) {
             errorTitle = 'File Tidak Valid';
-            errorMessage = 'File yang diupload tidak valid. Pastikan file berformat JPG, PNG, atau MP4 dan ukuran maksimal 100MB.';
+            errorMessage = 'File tidak valid. Periksa format dan pastikan ukuran tiap file tidak melebihi 50 MB.';
           } else {
             // Generic error message for other cases
             errorMessage = Object.values(errors).join('. ');
@@ -673,16 +666,16 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
     <MainLayout title="Form Masukan" currentPage="/feedback">
       <Head title="Form Masukan" />
 
-      <div className="p-3 sm:p-4 md:p-6">
+      <div className="mx-auto w-full max-w-5xl py-3 sm:py-5">
         <PageHeader
-          title={isAuthenticatedUser ? 'Form Masukan - Sampaikan Masukan Anda' : 'Guest Feedback - Sampaikan Masukan Anda'}
-          description="Silakan isi form di bawah ini untuk menyampaikan masukan atau saran terkait menara telekomunikasi"
-          showLogo
+          title="Kirim Masukan"
+          description="Sampaikan saran atau masukan terkait menara dan jaringan fiber optik di Kabupaten Semarang."
+          showLogo={false}
         />
 
         <div className="bg-card rounded-lg border border-border shadow-xs">
           <div className="p-3 sm:p-4 md:p-6">
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-foreground mb-4 sm:mb-6">Form Masukan</h2>
+            <p className="mb-5 text-sm text-muted-foreground">Kolom bertanda <span className="text-destructive">*</span> wajib diisi.</p>
 
             {isAuthenticatedUser && (
               <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-info-soft border border-info-border rounded-lg">
@@ -704,14 +697,18 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
             )}
 
             <form onSubmit={handleSubmit} noValidate>
+              {showValidationSummary && <FormValidationSummary ref={validationSummaryRef} validation={validation} />}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
                 <div>
-                  <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                  <label htmlFor="feedback-name" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                     Nama Lengkap <span className="text-destructive">*</span>
                   </label>
                   <input
+                    id="feedback-name"
                     type="text"
                     name="nama"
+                    aria-invalid={validation.nama}
+                    aria-describedby={validation.nama ? 'feedback-name-error' : undefined}
                     value={isAuthenticatedUser ? (auth?.user?.name || '') : form.nama}
                     onChange={handleChange}
                     className={cn(
@@ -725,17 +722,20 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                     readOnly={isAuthenticatedUser}
                   />
                   {validation.nama && (
-                    <p className="text-destructive text-xs sm:text-sm mt-1">Nama lengkap harus diisi</p>
+                    <p id="feedback-name-error" className="text-destructive text-xs sm:text-sm mt-1">Nama lengkap harus diisi</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                  <label htmlFor="feedback-phone" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                     No. Telepon <span className="text-destructive">*</span>
                   </label>
                   <input
+                    id="feedback-phone"
                     type="tel"
                     name="telepon"
+                    aria-invalid={validation.telepon}
+                    aria-describedby={validation.telepon ? 'feedback-phone-error' : undefined}
                     value={form.telepon}
                     onChange={handleChange}
                     className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.telepon ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-2.5 sm:p-3 text-sm sm:text-base`}
@@ -743,7 +743,7 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                     maxLength={20}
                   />
                   {validation.telepon && (
-                    <p className="text-destructive text-xs sm:text-sm mt-1">
+                    <p id="feedback-phone-error" className="text-destructive text-xs sm:text-sm mt-1">
                       {!form.telepon.trim()
                         ? 'Nomor telepon harus diisi'
                         : 'Format nomor telepon tidak valid. Gunakan format: 08xx, 628xx, atau +628xx'}
@@ -753,12 +753,15 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
 
                 {!isAuthenticatedUser && (
                   <div>
-                    <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                    <label htmlFor="feedback-email" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                       Email <span className="text-destructive">*</span>
                     </label>
                     <input
+                      id="feedback-email"
                       type="email"
                       name="email"
+                      aria-invalid={validation.email}
+                      aria-describedby={validation.email ? 'feedback-email-error' : undefined}
                       value={form.email}
                       onChange={handleChange}
                       className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.email ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-2.5 sm:p-3 text-sm sm:text-base`}
@@ -766,18 +769,18 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                       maxLength={100}
                     />
                     {validation.email && (
-                      <p className="text-destructive text-xs sm:text-sm mt-1">Email harus diisi dengan format yang valid</p>
+                      <p id="feedback-email-error" className="text-destructive text-xs sm:text-sm mt-1">Email harus diisi dengan format yang valid</p>
                     )}
                   </div>
                 )}
 
-                <div className="md:col-span-2">
-                  <label className="block text-foreground font-medium mb-2 sm:mb-3 text-sm sm:text-base">
-                    Tipe Masukan <span className="text-destructive">*</span>
-                  </label>
+                <fieldset className="md:col-span-2">
+                  <legend className="text-foreground font-medium mb-2 text-sm sm:text-base">
+                    Jenis Infrastruktur <span className="text-destructive">*</span>
+                  </legend>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       form.location_type_filter === 'tower'
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -799,13 +802,13 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                       <div className="ml-2 sm:ml-3 flex-1">
                         <div className="font-medium text-foreground text-sm sm:text-base">Menara</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                          Pilih lokasi tower untuk masukan
+                          Pilih menara yang terkait
                         </div>
                       </div>
                     </label>
 
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       form.location_type_filter === 'fo_point'
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -827,20 +830,20 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                       <div className="ml-2 sm:ml-3 flex-1">
                         <div className="font-medium text-foreground text-sm sm:text-base">Fiber Optik</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                          Pilih lokasi FO Point untuk masukan
+                          Pilih titik fiber optik yang terkait
                         </div>
                       </div>
                     </label>
                   </div>
-                </div>
+                </fieldset>
 
-                <div className="md:col-span-2">
-                  <label className="block text-foreground font-medium mb-2 sm:mb-3 text-sm sm:text-base">
+                <fieldset className="md:col-span-2">
+                  <legend className="text-foreground font-medium mb-2 text-sm sm:text-base">
                     Visibilitas Masukan <span className="text-destructive">*</span>
-                  </label>
+                  </legend>
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       form.is_public
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -853,15 +856,15 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                         className="mt-1 sm:mt-0 text-primary accent-primary"
                       />
                       <div className="ml-2 sm:ml-3 flex-1">
-                        <div className="font-medium text-foreground text-sm sm:text-base">Terbuka (Public)</div>
+                        <div className="font-medium text-foreground text-sm sm:text-base">Publik</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                          Masukan dapat dilihat oleh pengguna lain. Membantu transparansi dan berbagi informasi.
+                          Masukan dapat dilihat pengguna lain.
                         </div>
                       </div>
                     </label>
 
                     <label className={cn(
-                      'flex items-start sm:items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer flex-1 transition-colors',
+                      'flex items-start sm:items-center p-3 border rounded-lg cursor-pointer flex-1 transition-colors',
                       !form.is_public
                         ? 'border-primary bg-primary-soft'
                         : 'border-border hover:bg-accent hover:text-accent-foreground'
@@ -887,24 +890,27 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                         className="mt-1 sm:mt-0 text-primary accent-primary"
                       />
                       <div className="ml-2 sm:ml-3 flex-1">
-                        <div className="font-medium text-foreground text-sm sm:text-base">Tertutup (Private)</div>
+                        <div className="font-medium text-foreground text-sm sm:text-base">Privat</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
                           {isAuthenticatedUser
                             ? 'Hanya Anda dan admin yang dapat melihat masukan ini.'
-                            : 'Pesan private hanya tersedia untuk pengguna yang sudah login. Silakan daftar atau login terlebih dahulu.'}
+                            : 'Masuk untuk mengirim masukan privat.'}
                         </div>
                       </div>
                     </label>
                   </div>
-                </div>
+                </fieldset>
 
                 <div>
-                  <label className="block text-foreground font-medium mb-2">
+                  <label htmlFor="feedback-category" className="block text-foreground font-medium mb-2">
                     Kategori Masukan <span className="text-destructive">*</span>
                   </label>
                   {!isOtherCategory ? (
                     <select
+                      id="feedback-category"
                       name="kategori"
+                      aria-invalid={validation.kategori}
+                      aria-describedby={validation.kategori ? 'feedback-category-error' : undefined}
                       value={form.kategori}
                       onChange={handleCategoryChange}
                       className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.kategori ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 text-base sm:text-sm p-3`}
@@ -919,8 +925,11 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                   ) : (
                     <div className="flex gap-2">
                       <input
+                        id="feedback-category"
                         type="text"
                         name="kategori"
+                        aria-invalid={validation.kategori}
+                        aria-describedby={validation.kategori ? 'feedback-category-error' : undefined}
                         value={form.kategori}
                         onChange={handleChange}
                         className={`flex-1 rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.kategori ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-3`}
@@ -937,7 +946,7 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                     </div>
                   )}
                   {validation.kategori && (
-                    <p className="text-destructive text-sm mt-1">Kategori harus dipilih</p>
+                    <p id="feedback-category-error" className="text-destructive text-sm mt-1">Kategori harus dipilih</p>
                   )}
                 </div>
               </div>
@@ -950,12 +959,16 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                 selectedLocationType={form.feedbackable_type === 'App\\Models\\Tower' ? 'tower' : form.feedbackable_type === 'App\\Models\\FoPoint' ? 'fo_point' : undefined}
                 onLocationSelect={handleLocationSelect}
                 onClear={handleLocationClear}
-                label={form.location_type_filter === 'tower' ? "Lokasi Tower" : "Lokasi FO Point"}
+                label={form.location_type_filter === 'tower' ? "Lokasi Menara" : "Titik Fiber Optik"}
                 required={true}
                 error={validation.lokasi_tower}
                 errorMessage="Lokasi harus dipilih"
                 className="mb-6"
               />
+
+              <p className="mb-5 text-sm text-muted-foreground">
+                Saat Anda mengirim masukan, browser akan meminta izin lokasi perangkat untuk memverifikasi kedekatan dengan lokasi yang dipilih. Koordinat yang berhasil diperoleh dicatat untuk proses verifikasi.
+              </p>
 
               <FileUpload
                 files={files}
@@ -965,11 +978,14 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
               />
 
               <div className="mb-4 sm:mb-6">
-                <label className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
+                <label htmlFor="feedback-message" className="block text-foreground font-medium mb-1.5 sm:mb-2 text-sm sm:text-base">
                   Pesan/Masukan <span className="text-destructive">*</span>
                 </label>
                 <textarea
+                  id="feedback-message"
                   name="pesan"
+                  aria-invalid={validation.pesan}
+                  aria-describedby={validation.pesan ? 'feedback-message-error' : undefined}
                   value={form.pesan}
                   onChange={handleChange}
                   className={`w-full rounded-md border bg-background text-foreground placeholder:text-placeholder ${validation.pesan ? 'border-destructive' : 'border-input'} focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 p-2.5 sm:p-3 resize-vertical text-sm sm:text-base`}
@@ -978,7 +994,7 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                   maxLength={MAX_MESSAGE_LENGTH}
                 />
                 {validation.pesan && (
-                  <p className="text-destructive text-xs sm:text-sm mt-1">
+                  <p id="feedback-message-error" className="text-destructive text-xs sm:text-sm mt-1">
                     Pesan harus diisi
                   </p>
                 )}
@@ -1003,27 +1019,12 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-2 sm:gap-3 md:gap-4">
                 <AnimatedButton
-                  type="button"
-                  variant="secondary"
-                  size="md"
-                  animation="scale"
-                  onClick={resetForm}
-                  disabled={isSubmitting}
-                >
-                  Reset
-                </AnimatedButton>
-                <AnimatedButton
                   type="submit"
                   variant="primary"
                   size="md"
                   animation="scale"
                   loading={isSubmitting}
                   disabled={isSubmitting || (!isAuthenticatedUser && !captchaToken)}
-                  icon={
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                  }
                 >
                   {isSubmitting ? 'Mengirim...' : 'Kirim Masukan'}
                 </AnimatedButton>

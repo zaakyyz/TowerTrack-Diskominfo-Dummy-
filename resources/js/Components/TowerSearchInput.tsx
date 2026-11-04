@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback, useId } from 'react';
 import { filterTowers, findMatchPositions, Tower } from '@/utils/searchUtils';
 
 // Function to highlight matched text
@@ -43,6 +43,7 @@ interface TowerSearchInputProps {
   onClear?: () => void;
   placeholder?: string;
   label?: string;
+  ariaLabelledBy?: string;
   required?: boolean;
   error?: boolean;
   errorMessage?: string;
@@ -61,6 +62,7 @@ export default function TowerSearchInput({
   onClear,
   placeholder = "Ketik minimal 1 karakter untuk mencari...",
   label = "Lokasi Menara",
+  ariaLabelledBy,
   required = false,
   error = false,
   errorMessage,
@@ -73,6 +75,7 @@ export default function TowerSearchInput({
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = useId();
 
   // Use external searchTerm if provided (controlled), otherwise use internal state (uncontrolled)
   const searchTerm = externalSearchTerm !== undefined ? externalSearchTerm : internalSearchTerm;
@@ -203,13 +206,14 @@ export default function TowerSearchInput({
   return (
     <div className={className}>
       {label && (
-        <label className="block text-foreground font-medium mb-2">
+        <label htmlFor={inputId} className="block text-foreground font-medium mb-2">
           {label} {required && <span className="text-destructive-strong">*</span>}
         </label>
       )}
       
       <div className="relative" ref={dropdownRef}>
         <input
+          id={inputId}
           ref={inputRef}
           type="text"
           placeholder={hasSelection ? "" : placeholder}
@@ -227,6 +231,9 @@ export default function TowerSearchInput({
           }}
           onKeyDown={handleKeyDown}
           role="combobox"
+          aria-labelledby={ariaLabelledBy}
+          aria-invalid={error}
+          aria-describedby={error && errorMessage ? `${inputId}-error` : undefined}
           aria-expanded={showDropdown}
           aria-controls="tower-listbox"
           aria-autocomplete="list"
@@ -312,7 +319,7 @@ export default function TowerSearchInput({
       </div>
       
       {error && errorMessage && (
-        <p className="text-destructive-strong text-sm mt-1">{errorMessage}</p>
+        <p id={`${inputId}-error`} className="text-destructive-strong text-sm mt-1">{errorMessage}</p>
       )}
       
       {searchTerm && !showDropdown && !hasSelection && (
