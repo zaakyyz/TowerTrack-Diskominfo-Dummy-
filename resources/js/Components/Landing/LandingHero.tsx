@@ -63,8 +63,8 @@ const LandingHero: React.FC<LandingHeroProps> = ({
                 }}
             />
 
-            <div className="relative mx-auto w-full max-w-screen-2xl px-4 py-14 sm:px-6 sm:py-20 lg:px-10 lg:py-24">
-                <div className="flex flex-col gap-12 lg:flex-row lg:items-center lg:gap-14">
+            <div className="relative mx-auto w-full max-w-screen-2xl px-4 py-14 sm:px-6 sm:py-20 lg:px-10 lg:py-16">
+                <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:gap-14">
                     <div className="min-w-0 lg:max-w-xl">
                         {/*
                             THE OFFICIAL NAME SITS HERE, NOT IN THE HEADLINE.
