@@ -27,8 +27,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
         </svg>
       ),
       color: 'text-muted-foreground',
-      bgColor: 'bg-muted',
-      borderColor: 'border-border'
+      bgColor: 'bg-muted'
     },
     {
       label: 'Menunggu',
@@ -39,8 +38,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
         </svg>
       ),
       color: 'text-warning-strong',
-      bgColor: 'bg-warning-soft',
-      borderColor: 'border-warning-border'
+      bgColor: 'bg-warning-soft'
     },
     {
       label: 'Diproses',
@@ -51,8 +49,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
         </svg>
       ),
       color: 'text-info-strong',
-      bgColor: 'bg-info-soft',
-      borderColor: 'border-info-border'
+      bgColor: 'bg-info-soft'
     },
     {
       label: 'Selesai',
@@ -63,8 +60,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
         </svg>
       ),
       color: 'text-success-strong',
-      bgColor: 'bg-success-soft',
-      borderColor: 'border-success-border'
+      bgColor: 'bg-success-soft'
     }
   ];
 
@@ -73,7 +69,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className={`bg-card rounded-lg p-5 shadow-xs border ${stat.borderColor} transition-colors group`}
+          className="group rounded-lg border border-border bg-card p-5 shadow-xs transition-colors"
         >
           <div className="flex items-center justify-between mb-3">
             <div className={`p-2.5 rounded-lg ${stat.bgColor} group-hover:bg-opacity-80 transition-colors`}>
