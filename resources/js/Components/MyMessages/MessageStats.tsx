@@ -26,8 +26,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
         </svg>
       ),
-      color: 'text-muted-foreground',
-      bgColor: 'bg-muted'
+      color: 'text-muted-foreground'
     },
     {
       label: 'Menunggu',
@@ -37,8 +36,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      color: 'text-warning-strong',
-      bgColor: 'bg-warning-soft'
+      color: 'text-warning-strong'
     },
     {
       label: 'Diproses',
@@ -48,8 +46,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
-      color: 'text-info-strong',
-      bgColor: 'bg-info-soft'
+      color: 'text-info-strong'
     },
     {
       label: 'Selesai',
@@ -59,8 +56,7 @@ export default function MessageStats({ items }: MessageStatsProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      color: 'text-success-strong',
-      bgColor: 'bg-success-soft'
+      color: 'text-success-strong'
     }
   ];
 
@@ -69,19 +65,13 @@ export default function MessageStats({ items }: MessageStatsProps) {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="group rounded-lg border border-border bg-card p-5 shadow-xs transition-colors"
+          className="rounded-lg border border-border bg-card p-5 shadow-xs"
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className={`p-2.5 rounded-lg ${stat.bgColor} group-hover:bg-opacity-80 transition-colors`}>
-              <div className={stat.color}>
-                {stat.icon}
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-3xl font-bold text-foreground group-hover:text-foreground transition-colors">{stat.value}</div>
-            </div>
+          <div className="mb-3 flex items-center justify-between">
+            <span aria-hidden="true" className={stat.color}>{stat.icon}</span>
+            <div className="text-3xl font-bold text-foreground">{stat.value}</div>
           </div>
-          <div className="text-sm font-semibold text-muted-foreground group-hover:text-foreground transition-colors">{stat.label}</div>
+          <div className="text-sm font-semibold text-muted-foreground">{stat.label}</div>
         </div>
       ))}
     </div>
