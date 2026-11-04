@@ -87,7 +87,7 @@ const HeroSection: React.FC<HeroSectionProps> = React.memo<HeroSectionProps>((
       <div
         className={cn(
           'relative mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-10',
-          fullScreen ? 'py-14 sm:py-20' : 'py-10 sm:py-14',
+          fullScreen ? 'py-14 sm:py-20 lg:py-14' : 'py-10 sm:py-14',
         )}
       >
         <div
@@ -148,7 +148,7 @@ const HeroSection: React.FC<HeroSectionProps> = React.memo<HeroSectionProps>((
 
           {hasArt && (
             <div
-              className="tt-enter-right relative w-full shrink-0 lg:w-[46%]"
+              className="tt-enter-right relative w-full shrink-0 lg:w-[46%] lg:max-w-[32rem]"
               style={{ '--tt-delay': '120ms', '--tt-duration': '320ms' } as React.CSSProperties}
             >
               {/* `art` wins over `backgroundImage` when both are given.

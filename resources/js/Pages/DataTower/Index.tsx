@@ -249,9 +249,7 @@ export default function DataTowerIndex({
       {/* App Bar */}
       <AppBar currentPage="/data-tower" />
       
-      {/* Hero. Identical configuration to /data-fo — same variant, same
-          align, same (absent) fullScreen — so the two public pages share one
-          band height instead of the 474px/425px they used to render. */}
+      {/* Hero. Shared layout with /data-fo keeps both public data pages aligned. */}
       <HeroSection
         eyebrow="Kabupaten Semarang"
         title="Data Menara Telekomunikasi"
