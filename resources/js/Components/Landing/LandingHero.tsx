@@ -84,7 +84,7 @@ const LandingHero: React.FC<LandingHeroProps> = ({
                             screen uses, so the two entrances agree.
                         */}
                         <p className="tt-enter-up">
-                            <span className="inline-flex items-center rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-medium tracking-wide text-primary-strong">
+                            <span className="inline-flex items-center rounded-full border border-primary-border bg-primary-soft px-3.5 py-1.5 text-sm font-semibold text-primary-strong">
                                 Sistem Monitoring Infrastruktur
                             </span>
                         </p>
