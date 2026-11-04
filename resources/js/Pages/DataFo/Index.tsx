@@ -947,9 +947,10 @@ export default function DataFoIndex({
                   Export
                 </button>
                 <button 
+                  type="button"
                   onClick={handleFullscreen}
-                  className="px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white rounded-md hover:opacity-90 transition-colors flex items-center justify-center gap-1.5 sm:gap-2 w-full xs:w-auto"
-                  title={isFullscreen ?"Keluar dari fullscreen" :"Masuk ke mode fullscreen"}
+                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors duration-140 hover:bg-accent focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2 xs:w-auto"
+                  title={isFullscreen ? 'Keluar dari layar penuh' : 'Masuk ke layar penuh'}
                 >
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     {isFullscreen ? (
@@ -958,7 +959,7 @@ export default function DataFoIndex({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                     )}
                   </svg>
-                  {isFullscreen ? 'Exit' : 'Fullscreen'}
+                  {isFullscreen ? 'Keluar Layar Penuh' : 'Layar Penuh'}
                 </button>
               </div>
             </div>
