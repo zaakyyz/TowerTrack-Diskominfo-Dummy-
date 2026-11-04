@@ -19,7 +19,7 @@ export default function MessageTable({ items, getStatusColor, formatDate, onOpen
           <thead className="bg-muted">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pengirim</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Info Pesan</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Jenis Pesan</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Kategori & Lokasi</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Interaksi</th>
@@ -66,8 +66,7 @@ export default function MessageTable({ items, getStatusColor, formatDate, onOpen
 
                   {/* Type */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.type === 'Keluhan' ? 'bg-destructive-soft text-destructive-strong' : 'bg-muted text-neutral-strong'
-                      }`}>
+                    <span className="text-sm font-medium text-foreground">
                       {item.type}
                     </span>
                   </td>
@@ -90,7 +89,7 @@ export default function MessageTable({ items, getStatusColor, formatDate, onOpen
 
                   {/* Status */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full" style={{
+                    <span className="inline-flex rounded-full px-2.5 py-1 text-sm font-semibold" style={{
                       backgroundColor: statusConfig.bg,
                       color: statusConfig.text
                     }}>

@@ -45,7 +45,7 @@ export default function MessageCard({ item, getStatusColor, formatDate, onOpen, 
         </div>
 
         {/* Status Badge */}
-        <span className="px-2.5 py-1 rounded-full text-xs font-semibold" style={{
+        <span className="rounded-full px-2.5 py-1 text-xs font-semibold sm:text-sm" style={{
           backgroundColor: statusConfig.bg,
           color: statusConfig.text
         }}>
@@ -55,8 +55,7 @@ export default function MessageCard({ item, getStatusColor, formatDate, onOpen, 
 
       {/* Content Meta Tags */}
       <div className="flex flex-wrap gap-2 mb-4">
-        <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${item.type === 'Keluhan' ? 'bg-destructive-soft text-destructive-strong' : 'bg-muted text-neutral-strong'
-          }`}>
+        <span className="inline-flex items-center py-1 text-sm font-medium text-foreground">
           {item.type}
         </span>
         <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground">
