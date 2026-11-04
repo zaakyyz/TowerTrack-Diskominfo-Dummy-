@@ -1,7 +1,8 @@
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { AnimatePresence } from 'motion/react';
 import { useBodyScrollLock } from '@/Hooks/useBodyScrollLock';
+import { useModalFocus } from '@/Hooks/useModalFocus';
 import ModalBackdrop from '@/Components/ModalBackdrop';
 import ModalContainer from '@/Components/ModalContainer';
 import { getFOStatusColor } from '@/utils/statusHelpers';
@@ -92,62 +93,11 @@ const DetailModal: React.FC<DetailModalProps> = ({
 }) => {
   const { auth } = usePage().props as any;
   const [selectedDetail, setSelectedDetail] = useState<string>('-- Pilih Detail --');
-  const titleId = useId();
-  const modalContentRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  const { titleId, contentRef, titleRef, restoreFocus } = useModalFocus(isOpen, onClose);
   
   // Prevent body scroll saat modal terbuka
   useBodyScrollLock(isOpen);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-    headingRef.current?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        event.stopPropagation();
-        onCloseRef.current();
-        return;
-      }
-
-      if (event.key !== 'Tab' || !modalContentRef.current) return;
-
-      const focusable = Array.from(
-        modalContentRef.current.querySelectorAll<HTMLElement>(
-          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter((element) => element.getClientRects().length > 0);
-
-      if (focusable.length === 0) {
-        event.preventDefault();
-        headingRef.current?.focus();
-        return;
-      }
-
-      const active = document.activeElement;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const focusIsOutside = !modalContentRef.current.contains(active);
-
-      if (event.shiftKey && (focusIsOutside || active === first || active === headingRef.current)) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && (focusIsOutside || active === last)) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown, true);
-    return () => document.removeEventListener('keydown', handleKeyDown, true);
-  }, [isOpen]);
-  
   // Only `data` short-circuits the render now. `isOpen` has moved into the
   // AnimatePresence below, because a component that returns null the instant it
   // closes gives AnimatePresence nothing to animate out — the modal would still
@@ -340,13 +290,11 @@ const DetailModal: React.FC<DetailModalProps> = ({
   };
 
   return (
-    <AnimatePresence onExitComplete={() => {
-      if (previouslyFocusedRef.current?.isConnected) previouslyFocusedRef.current.focus();
-    }}>
+    <AnimatePresence onExitComplete={restoreFocus}>
       {isOpen && (
       <ModalBackdrop key="detail-modal" onClick={onClose} labelledBy={titleId} opacity={60} blur zIndex={50}>
         <div 
-          ref={modalContentRef}
+          ref={contentRef}
           className="h-full flex items-center justify-center p-3 sm:p-4"
           onClick={(e) => e.stopPropagation()}
           style={{
@@ -370,7 +318,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
               <div className="min-w-0 flex-1">
                 <h3 
                   id={titleId}
-                  ref={headingRef}
+                  ref={titleRef}
                   tabIndex={-1}
                   className="text-base font-semibold leading-tight focus:outline-none sm:text-lg"
                   style={{ color: defaultTheme.headerTextColor }}
@@ -547,12 +495,12 @@ const DetailModal: React.FC<DetailModalProps> = ({
             </div>
             
             {/* Footer with actions */}
-            <div className="flex flex-shrink-0 flex-col gap-3 border-t bg-white p-3 sm:p-4">
+            <div className="flex flex-shrink-0 flex-col gap-2 border-t border-border bg-white p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:p-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                 {mainActions.map(renderAction)}
               </div>
               {responseActions.length > 0 && (
-                <div className="flex flex-col gap-1 border-t border-ink-200 pt-2 sm:flex-row sm:gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                   {responseActions.map(renderAction)}
                 </div>
               )}

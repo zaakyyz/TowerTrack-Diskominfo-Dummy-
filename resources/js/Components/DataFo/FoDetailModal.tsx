@@ -1,6 +1,7 @@
 import { AnimatePresence } from 'motion/react';
 import React from 'react';
 import { useBodyScrollLock } from '@/Hooks/useBodyScrollLock';
+import { useModalFocus } from '@/Hooks/useModalFocus';
 import ModalBackdrop from '@/Components/ModalBackdrop';
 import ModalContainer from '@/Components/ModalContainer';
 import { getFOStatusColor } from '@/utils/statusHelpers';
@@ -63,7 +64,8 @@ export default function FoDetailModal({
   detailData, 
   loading
 }: FoDetailModalProps) {
-  
+  const { titleId, contentRef, titleRef, restoreFocus } = useModalFocus(isOpen, onClose);
+
   // Prevent body scroll saat modal terbuka
   useBodyScrollLock(isOpen);
 
@@ -71,10 +73,11 @@ export default function FoDetailModal({
   // null on close leaves nothing for the exit animation to play on. See the
   // note in ModalBackdrop.
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={restoreFocus}>
       {isOpen && (
-      <ModalBackdrop key="fo-detail-modal" onClick={onClose} opacity={60} blur zIndex={50}>
+      <ModalBackdrop key="fo-detail-modal" onClick={onClose} labelledBy={titleId} opacity={60} blur zIndex={50}>
         <div 
+          ref={contentRef}
           className="h-full flex items-center justify-center p-4"
           onClick={(e) => e.stopPropagation()}
           style={{
@@ -94,8 +97,8 @@ export default function FoDetailModal({
                 against, at 10.95:1. */}
             <div className="bg-primary p-6 text-primary-foreground flex-shrink-0">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-white bg-opacity-20 rounded-lg">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex shrink-0 text-primary-foreground/80" aria-hidden="true">
                     {detailData?.type === 'point' ? (
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -106,9 +109,9 @@ export default function FoDetailModal({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                       </svg>
                     )}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold sm:text-2xl">
+                  </span>
+                  <div className="min-w-0">
+                    <h3 id={titleId} ref={titleRef} tabIndex={-1} className="text-xl font-semibold focus:outline-none sm:text-2xl">
                       {detailData?.type === 'route' ? detailData.data.route?.name || 'Detail Jalur FO' : 'Detail Titik FO'}
                     </h3>
                     <p className="text-primary-foreground/80 text-sm mt-1">
@@ -120,9 +123,9 @@ export default function FoDetailModal({
                   type="button"
                   onClick={onClose}
                   aria-label="Tutup detail"
-                  className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200 group"
+                  className="ml-3 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-white/90 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
                 >
-                  <svg aria-hidden="true" className="w-6 h-6 group-hover:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -170,20 +173,6 @@ export default function FoDetailModal({
               )}
             </div>
             
-            {/* Modal Footer - Pastikan background solid dan tidak tembus */}
-            <div 
-              className="p-4 sm:p-6 border-t border-border flex justify-end bg-white flex-shrink-0"
-              style={{
-                paddingBottom: `max(1rem, calc(1.5rem + env(safe-area-inset-bottom)))`
-              }}
-            >
-              <button
-                onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-foreground bg-muted rounded-md hover:bg-accent transition-colors"
-              >
-                Tutup
-              </button>
-            </div>
           </ModalContainer>
         </div>
       </ModalBackdrop>
@@ -206,11 +195,11 @@ function PointDetails({
         {/* Informasi Titik Card */}
         <div className="rounded-xl p-6 border border-border shadow-sm">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-muted rounded-lg">
+            <span className="flex shrink-0 text-muted-foreground" aria-hidden="true">
               <svg className="w-5 h-5 text-neutral-strong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-            </div>
+            </span>
             <h4 className="text-xl font-bold text-foreground">Informasi Titik</h4>
           </div>
           <div className="space-y-4">
@@ -244,7 +233,6 @@ function PointDetails({
                     const statusConfig = getFOStatusColor(point.status);
                     return (
                       <span className={`inline-flex items-center px-3 py-1 text-sm font-semibold rounded-full border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
-                        <div className={`w-2 h-2 rounded-full mr-2 ${statusConfig.dot}`}></div>
                         {statusConfig.label}
                       </span>
                     );
@@ -334,11 +322,11 @@ function PointDetails({
             matching the equivalent section in DetailModal.tsx. */}
         <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-muted rounded-lg">
+            <span className="flex shrink-0 text-muted-foreground" aria-hidden="true">
               <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-            </div>
+            </span>
             <h4 className="text-xl font-bold text-foreground">Dokumentasi Gambar</h4>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -406,11 +394,11 @@ function PointDetails({
       {relatedRoutes && relatedRoutes.length > 0 && (
         <div className="bg-success-soft rounded-lg p-6 border border-success-border">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-muted rounded-lg">
+            <span className="flex shrink-0 text-muted-foreground" aria-hidden="true">
               <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
-            </div>
+            </span>
             <div>
               <h4 className="text-xl font-bold text-foreground">Jalur Terkait</h4>
               <p className="text-sm text-muted-foreground mt-1">{relatedRoutes.length} jalur yang terhubung</p>
@@ -464,11 +452,11 @@ function RouteDetails({
         {/* Informasi Jalur Card */}
         <div className="rounded-lg border border-border p-5">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-muted rounded-lg">
+            <span className="flex shrink-0 text-muted-foreground" aria-hidden="true">
               <svg className="w-5 h-5 text-neutral-strong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
-            </div>
+            </span>
             <h4 className="text-xl font-bold text-foreground">Informasi Jalur</h4>
           </div>
           <div className="divide-y divide-border">
@@ -488,7 +476,6 @@ function RouteDetails({
                     const statusConfig = getFOStatusColor(route.status);
                     return (
                       <span className={`inline-flex items-center px-3 py-1 text-sm font-semibold rounded-full border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
-                        <div className={`w-2 h-2 rounded-full mr-2 ${statusConfig.dot}`}></div>
                         {statusConfig.label}
                       </span>
                     );
@@ -538,12 +525,12 @@ function RouteDetails({
         {/* Titik-titik dalam Jalur */}
         <div className="rounded-lg border border-border p-5">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-muted rounded-lg">
+            <span className="flex shrink-0 text-muted-foreground" aria-hidden="true">
               <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-            </div>
+            </span>
             <div>
               <h4 className="text-xl font-bold text-foreground">Titik-titik dalam Jalur</h4>
               <p className="text-sm text-muted-foreground mt-1">{points.length} titik terdaftar</p>
@@ -571,35 +558,34 @@ function RouteDetails({
                   </svg>
                   <span className="font-mono">{point.latitude}, {point.longitude}</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {point.images?.isp && (
-                    <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
-                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      ISP
-                    </span>
-                  )}
-                  {point.images?.pole && (
-                    <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
-                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      Tiang
-                    </span>
-                  )}
-                  {point.images?.junction_box && (
-                    <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
-                      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                      </svg>
-                      Junction Box
-                    </span>
-                  )}
-                  {!point.images?.isp && !point.images?.pole && !point.images?.junction_box && (
-                    <span className="text-xs text-placeholder italic">Tidak ada gambar tersedia</span>
-                  )}
-                </div>
+                {(point.images?.isp || point.images?.pole || point.images?.junction_box) && (
+                  <div className="flex flex-wrap gap-2">
+                    {point.images?.isp && (
+                      <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        ISP
+                      </span>
+                    )}
+                    {point.images?.pole && (
+                      <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Tiang
+                      </span>
+                    )}
+                    {point.images?.junction_box && (
+                      <span className="inline-flex items-center rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">
+                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        Junction Box
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
