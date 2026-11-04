@@ -101,7 +101,7 @@ const LandingHero: React.FC<LandingHeroProps> = ({
                             style={{ '--tt-delay': '160ms' } as React.CSSProperties}
                         >
                             TowerTrack memetakan menara telekomunikasi dan jalur fiber optic di seluruh
-                            kabupaten — pemilik, tinggi, jangkauan, dan status perizinannya. Terbuka untuk
+                            kabupaten. Informasinya mencakup pemilik, tinggi, jangkauan, dan status perizinan. Terbuka untuk
                             dilihat siapa saja, dan terbuka untuk dikoreksi.
                         </p>
 
