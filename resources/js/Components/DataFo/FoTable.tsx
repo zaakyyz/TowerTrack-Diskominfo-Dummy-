@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { getSideOfRoadStyle } from '@/utils/foIconUtils';
 import FOStatusBadge from '@/Components/DataFo/FOStatusBadge';
 import { getTypeBadgeConfig } from '@/utils/foConstants';
 import { Button } from '@/Components/ui/button';
@@ -183,10 +182,10 @@ export default function FoTable({
       </div>
     );
   };
-  const getTypeBadge = (type: string) => {
+  const getTypeLabel = (type: string) => {
     const config = getTypeBadgeConfig(type);
     return (
-      <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${config.bg} ${config.text}`}>
+      <span className="text-xs font-medium text-foreground sm:text-sm">
         {config.label}
       </span>
     );
@@ -195,15 +194,15 @@ export default function FoTable({
   // Render based on active tab
   if (activeTab === 'points') {
     return (
-      <Card className="overflow-hidden flex flex-col h-[600px]">
+      <Card className="flex flex-col overflow-hidden">
         <div className="p-4 border-b border-border">
           <h3 className="text-lg font-semibold text-foreground">Titik-titik FO</h3>
           <p className="text-sm text-muted-foreground mt-1">{filteredPoints.length} titik ditemukan</p>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative overscroll-contain">
+        <div>
           <div className="overflow-x-auto">
             <table className="w-full divide-y divide-border table-fixed">
-              <thead className="bg-muted sticky top-0 z-20 shadow-xs">
+              <thead className="bg-muted">
                 <tr>
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-2/5">Nama</th>
                   <th className="hidden md:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-1/6">Tipe</th>
@@ -212,7 +211,7 @@ export default function FoTable({
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[80px] w-[80px]">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="bg-card divide-y divide-border relative z-10">
+              <tbody className="divide-y divide-border bg-card">
                 {currentPoints.length > 0 ? currentPoints.map((point) => (
                   <tr key={point.id} className="hover:bg-accent transition-colors">
                     <td className="px-2 sm:px-4 py-3 max-w-0">
@@ -226,41 +225,14 @@ export default function FoTable({
                     </td>
                     <td className="hidden md:table-cell px-2 sm:px-4 py-3">
                       <div className="flex justify-center sm:justify-start">
-                        {getTypeBadge(point.type)}
+                        {getTypeLabel(point.type)}
                       </div>
                     </td>
                     <td className="px-2 sm:px-4 py-3">
                       <div className="flex justify-center sm:justify-start">
-                        {(() => {
-                          const side = point.side_of_road || 'unknown';
-                          if (side !== 'left' && side !== 'right') {
-                            return (
-                              <span className="inline-flex items-center rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                -
-                              </span>
-                            );
-                          }
-                          // Kiri and Kanan carried the SAME badge, so a reader
-                          // scanning the column had to read every word to tell
-                          // the two apart. They now borrow the map's own
-                          // light/dark pair, straight from getSideOfRoadStyle —
-                          // dark badge for Kiri, outlined badge for Kanan —
-                          // which makes the column skimmable and makes a row
-                          // match the pin it stands for.
-                          const style = getSideOfRoadStyle(side);
-                          return (
-                            <span
-                              className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold"
-                              style={{
-                                background: style.fill,
-                                color: style.ink,
-                                borderColor: side === 'right' ? style.ring : style.fill,
-                              }}
-                            >
-                              {side === 'left' ? 'Kiri' : 'Kanan'}
-                            </span>
-                          );
-                        })()}
+                        <span className="text-xs font-medium text-foreground sm:text-sm">
+                          {point.side_of_road === 'left' ? 'Kiri' : point.side_of_road === 'right' ? 'Kanan' : '—'}
+                        </span>
                       </div>
                     </td>
                     <td className="hidden md:table-cell px-2 sm:px-4 py-3">
@@ -271,6 +243,7 @@ export default function FoTable({
                     <td className="px-2 sm:px-4 py-3">
                       <div className="flex justify-center sm:justify-start">
                         <Button
+                          variant="outline"
                           size="sm"
                           onClick={(e) => {
                             e.preventDefault();
@@ -291,12 +264,6 @@ export default function FoTable({
                     </td>
                   </tr>
                 )}
-                {/* Fill remaining space if needed */}
-                {currentPoints.length < pointsPerPage && Array.from({ length: pointsPerPage - currentPoints.length }).map((_, index) => (
-                  <tr key={`empty-${index}`} className="h-16">
-                    <td colSpan={5} className="px-4 py-4">&nbsp;</td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>
@@ -313,14 +280,14 @@ export default function FoTable({
 
   if (activeTab === 'routes') {
     return (
-      <Card className="overflow-hidden flex flex-col h-[600px]">
+      <Card className="flex flex-col overflow-hidden">
         <div className="p-4 border-b border-border">
           <h3 className="text-lg font-semibold text-foreground">Jalur-jalur FO</h3>
           <p className="text-sm text-muted-foreground mt-1">{filteredRoutes.length} jalur ditemukan</p>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative overscroll-contain">
+        <div>
           <table className="w-full divide-y divide-border table-fixed">
-              <thead className="bg-muted sticky top-0 z-20 shadow-xs">
+              <thead className="bg-muted">
                 <tr>
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-2/5 sm:w-2/5">Nama</th>
                   <th className="px-1 sm:px-4 py-3 text-center sm:text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-1/5 sm:w-1/5">Titik</th>
@@ -328,7 +295,7 @@ export default function FoTable({
                   <th className="px-1 sm:px-4 py-3 text-center sm:text-left text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[80px] w-[80px]">Aksi</th>
                 </tr>
               </thead>
-            <tbody className="bg-card divide-y divide-border relative z-10">
+            <tbody className="divide-y divide-border bg-card">
               {currentRoutes.length > 0 ? currentRoutes.map((route) => (
                 <tr key={route.id} className="hover:bg-accent transition-colors">
                   <td className="px-2 sm:px-4 py-3">
@@ -358,6 +325,7 @@ export default function FoTable({
                   <td className="px-1 sm:px-4 py-3">
                     <div className="flex justify-center sm:justify-start">
                       <Button
+                        variant="outline"
                         size="sm"
                         onClick={(e) => {
                           e.preventDefault();
@@ -378,12 +346,6 @@ export default function FoTable({
                   </td>
                 </tr>
               )}
-              {/* Fill remaining space if needed */}
-              {currentRoutes.length < routesPerPage && Array.from({ length: routesPerPage - currentRoutes.length }).map((_, index) => (
-                <tr key={`empty-${index}`} className="h-16">
-                  <td colSpan={5} className="px-4 py-4">&nbsp;</td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>
@@ -399,17 +361,17 @@ export default function FoTable({
 
   // Default overview mode - show both tables
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2 xl:items-start">
       {/* FO Points Table */}
-      <Card className="overflow-hidden flex flex-col h-[600px]">
+      <Card className="flex flex-col overflow-hidden">
         <div className="p-4 border-b border-border">
           <h3 className="text-lg font-semibold text-foreground">Titik-titik FO</h3>
           <p className="text-sm text-muted-foreground mt-1">{filteredPoints.length} titik ditemukan</p>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative overscroll-contain">
+        <div>
           <div className="overflow-x-auto">
             <table className="w-full divide-y divide-border table-fixed">
-              <thead className="bg-muted sticky top-0 z-20 shadow-xs">
+              <thead className="bg-muted">
                 <tr>
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-2/5">Nama</th>
                   <th className="hidden md:table-cell px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-1/6">Tipe</th>
@@ -418,7 +380,7 @@ export default function FoTable({
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[80px] w-[80px]">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="bg-card divide-y divide-border relative z-10">
+              <tbody className="divide-y divide-border bg-card">
                 {currentPoints.length > 0 ? currentPoints.map((point) => (
                   <tr key={point.id} className="hover:bg-accent transition-colors">
                     <td className="px-2 sm:px-4 py-3 max-w-0">
@@ -432,33 +394,14 @@ export default function FoTable({
                     </td>
                     <td className="hidden md:table-cell px-2 sm:px-4 py-3">
                       <div className="flex justify-center sm:justify-start">
-                        {getTypeBadge(point.type)}
+                        {getTypeLabel(point.type)}
                       </div>
                     </td>
                     <td className="px-2 sm:px-4 py-3">
                       <div className="flex justify-center sm:justify-start">
-                        {(() => {
-                          const side = point.side_of_road || 'unknown';
-                          if (side === 'left') {
-                            return (
-                              <span className="inline-flex items-center rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-                                Kiri
-                              </span>
-                            );
-                          } else if (side === 'right') {
-                            return (
-                              <span className="inline-flex items-center rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
-                                Kanan
-                              </span>
-                            );
-                          } else {
-                            return (
-                              <span className="inline-flex items-center rounded-md border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                                -
-                              </span>
-                            );
-                          }
-                        })()}
+                        <span className="text-xs font-medium text-foreground sm:text-sm">
+                          {point.side_of_road === 'left' ? 'Kiri' : point.side_of_road === 'right' ? 'Kanan' : '—'}
+                        </span>
                       </div>
                     </td>
                     <td className="hidden md:table-cell px-2 sm:px-4 py-3">
@@ -469,6 +412,7 @@ export default function FoTable({
                     <td className="px-2 sm:px-4 py-3">
                       <div className="flex justify-center sm:justify-start">
                         <Button
+                          variant="outline"
                           size="sm"
                           onClick={(e) => {
                             e.preventDefault();
@@ -489,12 +433,6 @@ export default function FoTable({
                     </td>
                   </tr>
                 )}
-                {/* Fill remaining space if needed */}
-                {currentPoints.length < pointsPerPage && Array.from({ length: pointsPerPage - currentPoints.length }).map((_, index) => (
-                  <tr key={`empty-${index}`} className="h-16">
-                    <td colSpan={5} className="px-4 py-4">&nbsp;</td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>
@@ -508,14 +446,14 @@ export default function FoTable({
       </Card>
 
       {/* FO Routes Table */}
-      <Card className="overflow-hidden flex flex-col h-[600px]">
+      <Card className="flex flex-col overflow-hidden">
         <div className="p-4 border-b border-border">
           <h3 className="text-lg font-semibold text-foreground">Jalur-jalur FO</h3>
           <p className="text-sm text-muted-foreground mt-1">{filteredRoutes.length} jalur ditemukan</p>
         </div>
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden relative overscroll-contain">
+        <div>
           <table className="w-full divide-y divide-border table-fixed">
-              <thead className="bg-muted sticky top-0 z-20 shadow-xs">
+              <thead className="bg-muted">
                 <tr>
                   <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-2/5 sm:w-2/5">Nama</th>
                   <th className="px-1 sm:px-4 py-3 text-center sm:text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-1/5 sm:w-1/5">Titik</th>
@@ -523,7 +461,7 @@ export default function FoTable({
                   <th className="px-1 sm:px-4 py-3 text-center sm:text-left text-xs font-medium text-muted-foreground uppercase tracking-wider min-w-[80px] w-[80px]">Aksi</th>
                 </tr>
               </thead>
-            <tbody className="bg-card divide-y divide-border relative z-10">
+            <tbody className="divide-y divide-border bg-card">
               {currentRoutes.length > 0 ? currentRoutes.map((route) => (
                 <tr key={route.id} className="hover:bg-accent transition-colors">
                   <td className="px-2 sm:px-4 py-3">
@@ -553,6 +491,7 @@ export default function FoTable({
                   <td className="px-1 sm:px-4 py-3">
                     <div className="flex justify-center sm:justify-start">
                       <Button
+                        variant="outline"
                         size="sm"
                         onClick={(e) => {
                           e.preventDefault();
@@ -573,12 +512,6 @@ export default function FoTable({
                   </td>
                 </tr>
               )}
-              {/* Fill Pleasant space if needed */}
-              {currentRoutes.length < routesPerPage && Array.from({ length: routesPerPage - currentRoutes.length }).map((_, index) => (
-                <tr key={`empty-${index}`} className="h-16">
-                  <td colSpan={5} className="px-4 py-4">&nbsp;</td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>
