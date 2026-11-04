@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useForm, router } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { usePage } from '@inertiajs/react';
 import AnimatedButton from '@/Components/AnimatedButton';
 import { useGuestFormData } from '@/Hooks/useGuestData';
-import FormCard from '@/Components/Forms/FormCard';
-import FormHeader from '@/Components/Forms/FormHeader';
 import ContactFields from '@/Components/Forms/ContactFields';
 import TextareaWithCounter from '@/Components/Forms/TextareaWithCounter';
 
@@ -31,7 +29,7 @@ export default function CommentForm({
   // Auto-fill from cookie if available (only for guest users)
   const guestFormData = useGuestFormData();
 
-  const { data, setData, post, processing, errors, reset } = useForm({
+  const { data, setData, post, processing, errors } = useForm({
     message: '',
     parent_id: parentId,
     guest_name: guestFormData.name,
@@ -90,31 +88,20 @@ export default function CommentForm({
   };
 
   return (
-    <FormCard>
-      <FormHeader
-        icon={
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-          </svg>
-        }
-        title="Tulis Komentar"
-        iconBgColor="orange"
-      />
-
-      <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-4">
         {/* Reply indicator */}
         {replyingTo && (
-          <div className="mb-3 p-3 bg-warning-soft border border-warning-border rounded-lg flex items-center justify-between">
-            <span className="text-sm text-warning-strong">
-              Membalas ke <strong>{replyingTo}</strong>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span className="text-muted-foreground">
+              Membalas <strong className="font-semibold text-foreground">{replyingTo}</strong>
             </span>
             {onCancel && (
               <button
                 type="button"
                 onClick={onCancel}
-                className="text-sm text-warning-strong hover:text-warning-strong font-medium transition-colors"
+                className="rounded text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                Batal
+                Batalkan balasan
               </button>
             )}
           </div>
@@ -161,17 +148,11 @@ export default function CommentForm({
             size="md"
             animation="scale"
             loading={processing || isSubmitting}
-            icon={
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-            }
           >
             {processing || isSubmitting ? 'Mengirim...' : 'Kirim Komentar'}
           </AnimatedButton>
         </div>
-      </form>
-    </FormCard>
+    </form>
   );
 }
 

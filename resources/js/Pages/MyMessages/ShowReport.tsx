@@ -185,7 +185,7 @@ export default function ShowReport({ report, statuses = [], comments, commentCou
                 triggerFullWidth={false}
                 triggerClassName="whitespace-nowrap bg-neutral hover:bg-neutral text-white rounded-lg px-4 py-2 flex items-center gap-2 font-medium transition-colors"
                 title={replyingTo ? `Balas ${replyingTo.name}` : 'Tulis Komentar'}
-                description={replyingTo ? 'Komentar akan dikirim sebagai balasan.' : 'Komentar Anda akan terlihat oleh publik.'}
+                description={replyingTo ? 'Balasan Anda akan terlihat oleh publik.' : 'Komentar Anda akan terlihat oleh publik.'}
                 isOpen={isCommentModalOpen}
                 setOpen={setCommentModalOpen}
                 onOpen={() => setReplyingTo(null)}
