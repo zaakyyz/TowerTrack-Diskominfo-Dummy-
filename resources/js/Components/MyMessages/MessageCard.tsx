@@ -31,21 +31,21 @@ export default function MessageCard({ item, getStatusColor, formatDate, onOpen, 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-border p-4 hover:shadow-lg transition-colors duration-200 group">
       {/* Header: User & Status */}
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center gap-3">
+      <div className="mb-3 flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-3">
           {/* Avatar */}
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${item.type === 'Keluhan' ? 'bg-destructive-soft text-destructive-strong' : 'bg-muted text-neutral-strong'
+          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold ${item.type === 'Keluhan' ? 'bg-destructive-soft text-destructive-strong' : 'bg-muted text-neutral-strong'
             }`}>
             {item.senderName.charAt(0).toUpperCase()}
           </div>
-          <div>
+          <div className="min-w-0">
             <h3 className="font-semibold text-foreground leading-tight">{item.senderName}</h3>
             <p className="text-xs text-muted-foreground mt-0.5">{formatDateWithTime(item.created_at)}</p>
           </div>
         </div>
 
         {/* Status Badge */}
-        <span className="rounded-full px-2.5 py-1 text-xs font-semibold sm:text-sm" style={{
+        <span className="shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold sm:text-sm" style={{
           backgroundColor: statusConfig.bg,
           color: statusConfig.text
         }}>
