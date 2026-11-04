@@ -5,6 +5,7 @@ import { scrimVariants, useMotionPrefs } from '@/lib/motion';
 
 interface ModalBackdropProps {
   onClick?: (e?: React.MouseEvent) => void;
+  labelledBy?: string;
   opacity?: number;
   blur?: boolean;
   zIndex?: number;
@@ -54,6 +55,7 @@ interface ModalBackdropProps {
  */
 export default function ModalBackdrop({
   onClick,
+  labelledBy,
   opacity = MODAL_STYLES.opacity.medium,
   blur = false,
   zIndex = MODAL_STYLES.zIndex.modal,
@@ -87,6 +89,7 @@ export default function ModalBackdrop({
       onClick={onClick}
       role="dialog"
       aria-modal="true"
+      aria-labelledby={labelledBy}
     >
       {children}
     </m.div>

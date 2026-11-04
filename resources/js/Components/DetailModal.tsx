@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { AnimatePresence } from 'motion/react';
 import { useBodyScrollLock } from '@/Hooks/useBodyScrollLock';
@@ -92,9 +92,61 @@ const DetailModal: React.FC<DetailModalProps> = ({
 }) => {
   const { auth } = usePage().props as any;
   const [selectedDetail, setSelectedDetail] = useState<string>('-- Pilih Detail --');
+  const titleId = useId();
+  const modalContentRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   
   // Prevent body scroll saat modal terbuka
   useBodyScrollLock(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+    headingRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        event.stopPropagation();
+        onCloseRef.current();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !modalContentRef.current) return;
+
+      const focusable = Array.from(
+        modalContentRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => element.getClientRects().length > 0);
+
+      if (focusable.length === 0) {
+        event.preventDefault();
+        headingRef.current?.focus();
+        return;
+      }
+
+      const active = document.activeElement;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const focusIsOutside = !modalContentRef.current.contains(active);
+
+      if (event.shiftKey && (focusIsOutside || active === first || active === headingRef.current)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (focusIsOutside || active === last)) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, true);
+    return () => document.removeEventListener('keydown', handleKeyDown, true);
+  }, [isOpen]);
   
   // Only `data` short-circuits the render now. `isOpen` has moved into the
   // AnimatePresence below, because a component that returns null the instant it
@@ -233,23 +285,13 @@ const DetailModal: React.FC<DetailModalProps> = ({
       variant: 'secondary'
     });
 
-    // Close is visually quieter than the available actions.
-    builtActions.push({
-      id: 'close',
-      label: 'Tutup',
-      icon: 'close',
-      onClick: onClose,
-      variant: 'default'
-    });
-
     return builtActions.filter(action => action.show !== false);
   };
 
   const actionButtons = buildActionButtons();
 
-  const mainActions = actionButtons.filter(action => !['close', 'complaint', 'feedback'].includes(action.id));
+  const mainActions = actionButtons.filter(action => !['complaint', 'feedback'].includes(action.id));
   const responseActions = actionButtons.filter(action => ['complaint', 'feedback'].includes(action.id));
-  const closeAction = actionButtons.find(action => action.id === 'close');
 
   const actionClassName = (action: DetailAction) => {
     const base = 'inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-800 focus-visible:ring-offset-2 w-full sm:w-auto';
@@ -257,9 +299,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
       ? 'bg-brand-800 text-white hover:bg-brand-900'
       : ['complaint', 'feedback'].includes(action.id)
         ? 'border border-brand-300 bg-white text-brand-800 hover:bg-brand-50'
-        : action.id === 'close'
-          ? 'text-ink-600 hover:text-ink-900'
-          : 'border border-ink-300 bg-white text-ink-900 hover:bg-ink-50';
+        : 'border border-ink-300 bg-white text-ink-900 hover:bg-ink-50';
 
     return `${base} ${appearance} ${action.className ?? ''}`;
   };
@@ -300,10 +340,13 @@ const DetailModal: React.FC<DetailModalProps> = ({
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={() => {
+      if (previouslyFocusedRef.current?.isConnected) previouslyFocusedRef.current.focus();
+    }}>
       {isOpen && (
-      <ModalBackdrop key="detail-modal" onClick={onClose} opacity={60} blur zIndex={50}>
+      <ModalBackdrop key="detail-modal" onClick={onClose} labelledBy={titleId} opacity={60} blur zIndex={50}>
         <div 
+          ref={modalContentRef}
           className="h-full flex items-center justify-center p-3 sm:p-4"
           onClick={(e) => e.stopPropagation()}
           style={{
@@ -314,18 +357,22 @@ const DetailModal: React.FC<DetailModalProps> = ({
           <ModalContainer maxWidth="2xl" maxHeight="90vh" className="w-full sm:max-w-xl lg:max-w-2xl">
             {/* Header */}
             <div 
-              className="text-white p-4 sm:p-6 flex items-center flex-shrink-0" 
+              className="flex flex-shrink-0 items-center p-4 text-white sm:p-6"
               style={{ backgroundColor: defaultTheme.headerBgColor }}
             >
               <span 
                 className="material-icons-outlined mr-2" 
                 style={{ color: defaultTheme.headerIconColor }}
+                aria-hidden="true"
               >
                 info
               </span>
-              <div className="flex-1">
+              <div className="min-w-0 flex-1">
                 <h3 
-                  className="text-base sm:text-lg font-semibold leading-tight" 
+                  id={titleId}
+                  ref={headingRef}
+                  tabIndex={-1}
+                  className="text-base font-semibold leading-tight focus:outline-none sm:text-lg"
                   style={{ color: defaultTheme.headerTextColor }}
                 >
                   {title} - {data.site_name || data.name || data.id}
@@ -334,6 +381,16 @@ const DetailModal: React.FC<DetailModalProps> = ({
                   <p className="text-sm mt-1 opacity-90">{subtitle}</p>
                 )}
               </div>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Tutup detail"
+                className="ml-3 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-white/90 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+              >
+                <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             
             {/* Body - Hanya area ini yang bisa scroll */}
@@ -491,19 +548,8 @@ const DetailModal: React.FC<DetailModalProps> = ({
             
             {/* Footer with actions */}
             <div className="flex flex-shrink-0 flex-col gap-3 border-t bg-white p-3 sm:p-4">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                  {mainActions.map(renderAction)}
-                </div>
-                {closeAction && (
-                  <button
-                    type="button"
-                    onClick={closeAction.onClick}
-                    className={actionClassName(closeAction)}
-                  >
-                    {closeAction.label}
-                  </button>
-                )}
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                {mainActions.map(renderAction)}
               </div>
               {responseActions.length > 0 && (
                 <div className="flex flex-col gap-1 border-t border-ink-200 pt-2 sm:flex-row sm:gap-3">
