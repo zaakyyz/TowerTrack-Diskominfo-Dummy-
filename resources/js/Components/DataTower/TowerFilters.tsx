@@ -28,10 +28,12 @@ export default function TowerFilters({
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 justify-end md:justify-self-end w-full md:w-auto">
       <form onSubmit={onSearch} className="w-full">
+        <label htmlFor="tower-search" className="mb-1 block text-sm font-medium text-foreground">Cari menara</label>
         <div className="flex items-stretch rounded-md overflow-hidden border border-input focus-within:border-ring focus-within:ring focus-within:ring-offset-0">
           <input 
+            id="tower-search"
             type="text"
-            placeholder="Cari menara"
+            placeholder="Nama menara"
             className="w-full px-4 py-2 outline-none border-0 focus:ring-0"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -50,7 +52,9 @@ export default function TowerFilters({
       </form>
 
       <div className="w-full">
+        <label htmlFor="tower-coordinate-filter" className="mb-1 block text-sm font-medium text-foreground">Koordinat</label>
         <select
+          id="tower-coordinate-filter"
           value={coordFilter}
           onChange={(e) => {
             const v = e.target.value as 'all' | 'with' | 'without';
@@ -61,14 +65,16 @@ export default function TowerFilters({
           }}
           className="w-full rounded-md border-input bg-background shadow-xs focus:border-ring focus:ring focus:ring-offset-0 text-base sm:text-sm"
         >
-          <option value="all">Semua</option>
+          <option value="all">Semua koordinat</option>
           <option value="with">Ada koordinat</option>
           <option value="without">Tanpa koordinat</option>
         </select>
       </div>
 
       <div className="w-full">
+        <label htmlFor="tower-owner-filter" className="mb-1 block text-sm font-medium text-foreground">Pemilik</label>
         <select
+          id="tower-owner-filter"
           value={ownerFilter}
           onChange={(e) => {
             const v = e.target.value;
@@ -78,9 +84,8 @@ export default function TowerFilters({
             router.get('/data-tower', params, { preserveState: true, preserveScroll: true, replace: true });
           }}
           className="w-full rounded-md border-input bg-background shadow-xs focus:border-ring focus:ring focus:ring-offset-0 text-base sm:text-sm"
-          title="Filter berdasarkan pemilik menara"
         >
-          <option value="all">Semua Pemilik</option>
+          <option value="all">Semua pemilik</option>
           {uniqueOwners.map(owner => (
             <option key={owner} value={owner}>{owner}</option>
           ))}

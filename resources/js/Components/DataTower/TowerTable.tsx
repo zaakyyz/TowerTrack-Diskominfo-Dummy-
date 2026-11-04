@@ -1,6 +1,5 @@
 import React from 'react';
 import { Badge } from '@/Components/ui/badge';
-import { router } from '@inertiajs/react';
 
 interface Tower {
   id: number;
@@ -56,24 +55,29 @@ export default function TowerTable({
               <th className="px-4 py-3 border-b">Site Menara</th>
               <th className="px-4 py-3 border-b">Koordinat</th>
               <th className="px-4 py-3 border-b">Tinggi</th>
-              <th className="px-4 py-3 border-b">Owner</th>
+              <th className="px-4 py-3 border-b">Pemilik</th>
               <th className="px-4 py-3 border-b">Alamat</th>
               <th className="px-4 py-3 border-b text-center">Status</th>
             </tr>
           </thead>
           <tbody>
             {towers.map((tower) => (
-              <tr 
-                key={tower.id} 
-                className="hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                onClick={() => onTowerClick(tower)}
-              >
-                <td className="px-4 py-3 border-b">{tower.site_name || 'Belum Terdata'}</td>
+              <tr key={tower.id}>
+                <td className="px-4 py-3 border-b">
+                  <button
+                    type="button"
+                    onClick={() => onTowerClick(tower)}
+                    className="rounded-sm text-left text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    aria-label={`Lihat detail ${tower.site_name || 'menara'}`}
+                  >
+                    {tower.site_name || 'Belum Terdata'}
+                  </button>
+                </td>
                 <td className="px-4 py-3 border-b">
                   Lat: {formatCoordinate(tower.latitude, 'lat')}<br/>
                   Lng: {formatCoordinate(tower.longitude, 'lng')}
                 </td>
-                <td className="px-4 py-3 border-b">{tower.tinggi_menara ? `${tower.tinggi_menara}m` : 'Belum Terdata'}</td>
+                <td className="px-4 py-3 border-b">{tower.tinggi_menara != null ? `${tower.tinggi_menara} m` : 'Belum Terdata'}</td>
                 <td className="px-4 py-3 border-b">{tower.owner || 'Belum Terdata'}</td>
                 <td className="px-4 py-3 border-b">{tower.alamat_menara || 'Belum Terdata'}</td>
                 <td className="px-4 py-3 border-b text-center">
@@ -102,7 +106,8 @@ export default function TowerTable({
           {towers.map((tower) => (
             <button
               key={tower.id}
-              className="w-full text-left rounded-lg border border-border p-4 bg-white shadow-sm active:opacity-90"
+              type="button"
+              className="w-full text-left rounded-lg border border-border p-4 bg-white shadow-sm active:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               onClick={() => onTowerClick(tower)}
               aria-label={`Detail ${tower.site_name || 'Belum Terdata'}`}
             >
@@ -112,7 +117,7 @@ export default function TowerTable({
                   <p className="text-xs text-muted-foreground">
                     Lat: {formatCoordinate(tower.latitude, 'lat')} · Lng: {formatCoordinate(tower.longitude, 'lng')}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">Tinggi: {tower.tinggi_menara ? `${tower.tinggi_menara}m` : 'Belum Terdata'} · Owner: {tower.owner || 'Belum Terdata'}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Tinggi: {tower.tinggi_menara != null ? `${tower.tinggi_menara} m` : 'Belum Terdata'} · Pemilik: {tower.owner || 'Belum Terdata'}</p>
                   <p
                     className="text-xs text-muted-foreground mt-1"
                     style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
@@ -183,11 +188,13 @@ export default function TowerTable({
               return (
                 <button
                   key={pageNum}
+                  type="button"
                   onClick={() => onPageChange(pageNum)}
+                  aria-current={pageNum === currentPage ? 'page' : undefined}
                   className={`px-3 py-1 border-t border-b ${
                     pageNum === currentPage
-                      ? 'font-medium text-white'
-                      : 'bg-white hover:bg-accent hover:text-accent-foreground'
+                      ? 'bg-primary font-medium text-primary-foreground'
+                      : 'bg-white text-foreground hover:bg-accent hover:text-accent-foreground'
                   }`}
                   
                 >
