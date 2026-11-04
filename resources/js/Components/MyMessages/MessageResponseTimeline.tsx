@@ -34,6 +34,7 @@ interface MessageResponseTimelineProps {
   accentColorClass?: string;
   orientation?: 'vertical' | 'horizontal';
   onPreviewAsset?: (asset: MessageResponseAsset) => void;
+  minimal?: boolean;
 }
 
 const defaultStatusResolver = (): StatusStyle => ({
@@ -55,6 +56,7 @@ export default function MessageResponseTimeline({
   heading = 'Balasan',
   orientation = 'vertical',
   onPreviewAsset,
+  minimal = false,
 }: MessageResponseTimelineProps) {
   if (!responses || responses.length === 0) {
     return null;
@@ -118,15 +120,15 @@ export default function MessageResponseTimeline({
   };
 
   const renderVerticalTimeline = () => (
-    <div className="bg-white rounded-xl p-5 border border-border shadow-sm">
+    <div className={minimal ? 'border-t border-border pt-5' : 'bg-white rounded-xl p-5 border border-border shadow-sm'}>
       {heading !== null && (
         <div className="flex items-center gap-2 mb-4">
-          <div className="rounded-md bg-primary p-2 text-primary-foreground">
+          {!minimal && <div className="rounded-md bg-primary p-2 text-primary-foreground">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-          </div>
-          {heading && <h5 className="text-sm font-bold text-foreground">{heading}</h5>}
+          </div>}
+          {heading && (minimal ? <h2 className="text-lg font-semibold text-foreground">{heading}</h2> : <h5 className="text-sm font-bold text-foreground">{heading}</h5>)}
         </div>
       )}
 
@@ -144,14 +146,14 @@ export default function MessageResponseTimeline({
                 className={`absolute left-2.5 top-3 w-3 h-3 rounded-full ${getTimelineDotClass(isLast)} z-10 ring-4 ring-card`}
               ></div>
 
-              <div className={`${'bg-card'} rounded-lg p-4 border ${'border-border'} shadow-sm`}>
+              <div className={minimal ? 'border-b border-border pb-4' : 'bg-card rounded-lg p-4 border border-border shadow-sm'}>
                 <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                    {!minimal && <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
-                    </div>
+                    </div>}
                     <div>
                       <div className="flex items-center gap-2">
                         <div className="text-sm font-semibold text-foreground">{renderDisplayName(response)}</div>
@@ -161,7 +163,7 @@ export default function MessageResponseTimeline({
                     </div>
                   </div>
 
-                  {isLast && statusConfig && (
+                  {isLast && statusConfig && !minimal && (
                     <span
                       className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border"
                       style={{
@@ -176,7 +178,7 @@ export default function MessageResponseTimeline({
                 </div>
 
                 {response.message && (
-                  <div className={`text-foreground leading-relaxed bg-white/60 backdrop-blur-sm rounded-lg p-3 border ${'border-border'} whitespace-pre-wrap`}>
+                  <div className={minimal ? 'text-foreground leading-relaxed whitespace-pre-wrap' : 'text-foreground leading-relaxed bg-white/60 rounded-lg p-3 border border-border whitespace-pre-wrap'}>
                     {response.message}
                   </div>
                 )}

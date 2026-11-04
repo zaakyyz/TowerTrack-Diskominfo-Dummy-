@@ -30,9 +30,10 @@ interface CommentItemProps {
   onReply?: (commentId: number, authorName: string) => void;
   replyingTo?: number | null;
   depth?: number;
+  minimal?: boolean;
 }
 
-export default function CommentItem({ comment, onReply, replyingTo, depth = 0 }: CommentItemProps) {
+export default function CommentItem({ comment, onReply, replyingTo, depth = 0, minimal = false }: CommentItemProps) {
   const isGuest = !comment.user;
   const authorName = comment.user?.name || comment.guest_name || 'Tamu';
   
@@ -55,10 +56,10 @@ export default function CommentItem({ comment, onReply, replyingTo, depth = 0 }:
   
   return (
     <div className="mt-3">
-      <div className="bg-white rounded-lg border border-border p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+      <div className={minimal ? 'border-b border-border py-4' : 'bg-white rounded-lg border border-border p-5 shadow-sm hover:shadow-md transition-shadow duration-200'}>
         <div className="flex items-start gap-4">
           {/* Avatar */}
-          <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center shadow-sm ${
+          <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${minimal ? '' : 'shadow-sm'} ${
             isGuest 
               ? 'bg-neutral'
               : 'bg-primary'
@@ -99,7 +100,7 @@ export default function CommentItem({ comment, onReply, replyingTo, depth = 0 }:
                 {formatDateWithTime(comment.created_at)}
               </span>
             </div>
-            <div className="text-foreground whitespace-pre-wrap leading-relaxed bg-muted rounded-lg p-3 border border-border">
+            <div className={minimal ? 'text-foreground whitespace-pre-wrap leading-relaxed' : 'text-foreground whitespace-pre-wrap leading-relaxed bg-muted rounded-lg p-3 border border-border'}>
               {comment.message}
             </div>
             
@@ -132,6 +133,7 @@ export default function CommentItem({ comment, onReply, replyingTo, depth = 0 }:
               onReply={onReply}
               replyingTo={replyingTo}
               depth={depth + 1}
+              minimal={minimal}
             />
           ))}
         </div>

@@ -11,6 +11,7 @@ type LocationCardProps = {
   feedbackable?: Location;
   reportableType?: string | null;
   feedbackableType?: string | null;
+  plain?: boolean;
 };
 
 /**
@@ -24,6 +25,7 @@ export default function LocationCard({
   feedbackable,
   reportableType,
   feedbackableType,
+  plain = false,
 }: LocationCardProps) {
   // Determine location type and data
   // Priority: reportable/feedbackable > tower/foPoint (for backward compatibility)
@@ -66,7 +68,15 @@ export default function LocationCard({
   );
 
   return (
-    <div className="bg-card rounded-lg p-5 border border-border shadow-sm">
+    <div className={plain ? 'min-w-0' : 'bg-card rounded-lg p-5 border border-border shadow-sm'}>
+      {plain ? (
+        <>
+          <div className="text-sm text-muted-foreground">{label}</div>
+          <div className="font-medium text-foreground">{locationName ?? 'Belum ditentukan'}</div>
+          {locationAddress && <div className="mt-0.5 text-sm text-muted-foreground">{locationAddress}</div>}
+        </>
+      ) : (
+      <>
       <div className="flex items-center gap-2 mb-3">
         <div className="rounded-lg border border-primary-border bg-primary-soft p-2 text-primary-strong">
           {locationIcon}
@@ -84,6 +94,8 @@ export default function LocationCard({
           </svg>
           {locationAddress}
         </div>
+      )}
+      </>
       )}
     </div>
   );
