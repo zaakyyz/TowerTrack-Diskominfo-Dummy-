@@ -20,6 +20,8 @@ class TowerOwnerUserSeeder extends Seeder
      */
     public function run(): void
     {
+        $password = config('app.demo_mode') ? config('app.demo_seed_password') : 'password123';
+
         // Get all owners
         $owners = Owner::all();
         
@@ -57,7 +59,7 @@ class TowerOwnerUserSeeder extends Seeder
             $usersToCreate[] = [
                 'name' => $owner->name,
                 'email' => $email,
-                'password' => Hash::make('password123'), // Default password
+                'password' => Hash::make($password),
                 'role' => 'tower_owner',
                 'owner_id' => $owner->id, // Link to owner
                 'email_verified_at' => now(), // Mark as verified

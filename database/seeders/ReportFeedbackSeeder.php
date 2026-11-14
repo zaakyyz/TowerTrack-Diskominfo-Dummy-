@@ -20,12 +20,14 @@ class ReportFeedbackSeeder extends Seeder
      */
     public function run(): void
     {
+        $demoPassword = config('app.demo_seed_password');
+
         // Get or create users with different roles
         $adminUser = User::firstOrCreate(
             ['email' => 'admin@dummy.local'],
             [
                 'name' => 'Admin User',
-                'password' => bcrypt('password123'),
+                'password' => bcrypt(config('app.demo_mode') ? $demoPassword : 'password123'),
                 'role' => 'admin',
                 'email_verified_at' => now(),
             ]
@@ -35,7 +37,7 @@ class ReportFeedbackSeeder extends Seeder
             ['email' => 'complainant@example.com'],
             [
                 'name' => 'User Complainant',
-                'password' => bcrypt('password'),
+                'password' => bcrypt(config('app.demo_mode') ? $demoPassword : 'password'),
                 'role' => 'complainant',
                 'email_verified_at' => now(),
             ]

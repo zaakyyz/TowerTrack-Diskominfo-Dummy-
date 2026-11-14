@@ -13,12 +13,14 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $password = config('app.demo_mode') ? config('app.demo_seed_password') : 'password123';
+
         // Create 1 admin user
         User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@kominfo.go.id',
             'role' => 'admin',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make($password),
         ]);
 
         // Create operator users
@@ -26,7 +28,7 @@ class UserSeeder extends Seeder
             'name' => 'Operator',
             'email' => 'operator@kominfo.go.id',
             'role' => 'operator',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make($password),
         ]);
 
         // Create complainant users
@@ -34,7 +36,7 @@ class UserSeeder extends Seeder
             'name' => 'Compainant',
             'email' => 'complainant@example.com',
             'role' => 'complainant',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make($password),
         ]);
 
 

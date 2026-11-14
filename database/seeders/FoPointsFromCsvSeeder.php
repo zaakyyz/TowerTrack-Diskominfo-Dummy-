@@ -77,6 +77,12 @@ class FoPointsFromCsvSeeder extends Seeder
      */
     public function run(): void
     {
+        if (config('app.demo_mode')) {
+            $this->command?->info('Demo mode: generating synthetic FO data.');
+            $this->generateDummyFoPoints();
+            return;
+        }
+
         $csvPath = base_path('Pemetaan jalur FO ISP.csv');
         $imagesRoot = public_path('images' . DIRECTORY_SEPARATOR . 'foto jalur FO');
 

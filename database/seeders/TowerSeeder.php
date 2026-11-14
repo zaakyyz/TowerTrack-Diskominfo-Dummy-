@@ -17,6 +17,12 @@ class TowerSeeder extends Seeder
      */
     public function run(): void
     {
+        if (config('app.demo_mode')) {
+            $this->command?->info('Demo mode: generating synthetic tower data.');
+            $this->generateDummyTowers();
+            return;
+        }
+
         $csvFile = database_path('../Data_menara_rev.csv');
         
         if (!file_exists($csvFile)) {

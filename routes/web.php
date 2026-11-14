@@ -39,12 +39,16 @@ Route::get('/dashboard', function () {
 Route::get('/data-tower', [TowerController::class, 'index'])->name('data.tower');
 Route::get('/data-fo', [FoController::class, 'index'])->name('data.fo');
 Route::get('/api/fo-routes/{routeId}/polyline', [FoController::class, 'getRoutePolyline'])->name('api.fo.route.polyline');
-Route::post('/fo-route/{foRoute}/generate-geojson', [FoController::class, 'generateGeoJSONRoute'])->name('fo.route.generate-geojson');
-Route::post('/api/fo-routes/generate-all', [FoController::class, 'generateAllGeoJSONRoutes'])->name('api.fo.routes.generate-all');
 Route::get('/fo-details/{type}/{id}', [FoController::class, 'getDetails'])->name('fo.details');
-Route::put('/fo-points/{id}', [FoController::class, 'updatePoint'])->name('fo.points.update');
-Route::put('/fo-routes/{id}', [FoController::class, 'updateRoute'])->name('fo.routes.update');
 Route::get('/tower/{tower}', [TowerController::class, 'show'])->name('tower.show');
+
+// These endpoints change FO data or consume routing API quota.
+Route::middleware(['auth', 'admin_or_operator'])->group(function () {
+    Route::post('/fo-route/{foRoute}/generate-geojson', [FoController::class, 'generateGeoJSONRoute'])->name('fo.route.generate-geojson');
+    Route::post('/api/fo-routes/generate-all', [FoController::class, 'generateAllGeoJSONRoutes'])->name('api.fo.routes.generate-all');
+    Route::put('/fo-points/{id}', [FoController::class, 'updatePoint'])->name('fo.points.update');
+    Route::put('/fo-routes/{id}', [FoController::class, 'updateRoute'])->name('fo.routes.update');
+});
 
 // Public feedback and complaint forms (no authentication required)
 Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');

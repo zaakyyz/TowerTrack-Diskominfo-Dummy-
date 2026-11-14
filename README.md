@@ -1,5 +1,13 @@
 # TowerTrack
 
+> Proyek kolaborasi untuk demonstrasi portofolio. Repositori ini merupakan fork dari
+> [proyek awal HassanZayyan](https://github.com/HassanZayyan/TowerTrack-Diskominfo-Dummy-).
+> Demo publik bukan layanan resmi Diskominfo Kabupaten Semarang.
+
+Kontribusi Muhammad Zaky yang terlihat pada riwayat commit mencakup antarmuka React/TypeScript,
+interaksi peta, aksesibilitas komponen, validasi formulir laporan/masukan, dan integrasi CAPTCHA.
+Lihat riwayat commit untuk rincian dan kontribusi kolaborator lain.
+
 Sistem monitoring infrastruktur telekomunikasi Kabupaten Semarang — Diskominfo Kabupaten Semarang.
 
 Aplikasi web untuk memetakan dan mengelola data menara telekomunikasi dan jaringan fiber optik di Kabupaten Semarang. Warga dapat melihat sebaran menara dan jalur FO di peta, lalu menyampaikan keluhan atau masukan terkait infrastruktur di sekitarnya. Petugas mengelola data dan menanggapi laporan yang masuk.
@@ -25,7 +33,7 @@ Butuh PHP 8.2+, Composer, Node.js 18+, dan MySQL.
 **1. Clone dan pasang dependensi**
 
 ```bash
-git clone https://github.com/HassanZayyan/TowerTrack-Diskominfo-Dummy-.git
+git clone https://github.com/zaakyyz/TowerTrack-Diskominfo-Dummy-.git
 cd TowerTrack-Diskominfo-Dummy-
 composer install
 npm install
@@ -54,7 +62,7 @@ DB_PASSWORD=
 php artisan migrate --seed
 ```
 
-Seeder membuat data dummy lengkap — menara, titik dan jalur FO, pengguna, serta contoh keluhan dan masukan — sehingga aplikasi langsung bisa dicoba tanpa data asli.
+Seeder membuat data contoh menara, titik dan jalur FO, pengguna, serta keluhan dan masukan. Pada seeding biasa, koordinat dapat dibaca dari CSV survei lokal jika berkasnya tersedia. Untuk demo publik, aktifkan `DEMO_MODE` agar koordinat dibuat secara sintetis.
 
 **4. Jalankan**
 
@@ -66,7 +74,22 @@ Satu perintah untuk server, queue, log, dan Vite sekaligus. Buka http://127.0.0.
 
 Kalau lebih suka terpisah, jalankan `php artisan serve` dan `npm run dev` di dua terminal.
 
-### Akun uji
+### Demo publik
+
+Gunakan database baru yang terpisah dari data asli. Sebelum menjalankan seeder pada server demo,
+atur `DEMO_MODE=true` dan isi `DEMO_SEED_PASSWORD` dengan password kuat di `.env` server.
+Mode ini memaksa seeder menara dan FO memakai koordinat sintetis meskipun berkas CSV tersedia.
+Jangan bagikan password ini sebagai akun uji publik karena semua akun hasil seeder demo memakainya.
+Pada hosting tanpa storage persisten seperti Vercel Container, set `DEMO_DISABLE_UPLOADS=true`;
+permintaan unggahan akan ditolak sampai object storage dikonfigurasi.
+
+Atur `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL` ke URL HTTPS demo,
+`SESSION_SECURE_COOKIE=true`, dan gunakan kunci Cloudflare Turnstile asli.
+Jangan mengunggah CSV survei, database kantor, berkas `.env`, atau media pengguna ke server demo.
+Pengunjung dapat mencoba peta tanpa login. Saat interview, tunjukkan fitur admin dengan akun
+yang kamu operasikan sendiri dan jangan publikasikan kredensialnya.
+
+### Akun uji lokal
 
 Semua akun hasil seeder memakai password `password123`.
 

@@ -13,6 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        if (config('app.demo_mode') && blank(config('app.demo_seed_password'))) {
+            throw new \RuntimeException('DEMO_SEED_PASSWORD must be set before seeding a public demo.');
+        }
+
         // Clean up user-uploaded files from storage before seeding
         $this->cleanupStorageFiles();
 
@@ -39,8 +43,12 @@ class DatabaseSeeder extends Seeder
         // Seed FO points first (required by ReportFeedbackSeeder)
         $this->call([
             FoPointsFromCsvSeeder::class,
-            SeminarDummySeeder::class,
         ]);
+
+        // Seminar sample uses fixed coordinates; keep the public demo entirely synthetic.
+        if (!config('app.demo_mode')) {
+            $this->call([SeminarDummySeeder::class]);
+        }
 
         // Sample reports and feedbacks (requires TowerOwnerUserSeeder and FoPointsFromCsvSeeder)
         $this->call([

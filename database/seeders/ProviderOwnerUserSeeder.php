@@ -18,6 +18,8 @@ class ProviderOwnerUserSeeder extends Seeder
      */
     public function run(): void
     {
+        $password = config('app.demo_mode') ? config('app.demo_seed_password') : 'password123';
+
         $providers = FoProvider::where('is_active', true)->get();
 
         if ($providers->isEmpty()) {
@@ -88,7 +90,7 @@ class ProviderOwnerUserSeeder extends Seeder
             $user = User::create([
                 'name' => "Provider Owner - {$provider->name}",
                 'email' => $email,
-                'password' => Hash::make('password123'), // Default password
+                'password' => Hash::make($password),
                 'role' => 'provider_owner',
                 'fo_provider_id' => $provider->id,
                 'email_verified_at' => now(),
@@ -108,7 +110,9 @@ class ProviderOwnerUserSeeder extends Seeder
             $this->command->warn("⚠ {$skippedCount} user sudah ada (dilewati)");
         }
         $this->command->newLine();
-        $this->command->info("📧 Default password untuk semua user: password123");
+        if (!config('app.demo_mode')) {
+            $this->command->info("📧 Default password untuk semua user: password123");
+        }
         $this->command->info("💡 Pastikan untuk mengubah password setelah login pertama kali!");
         $this->command->newLine();
         $this->command->info("💡 Provider sekarang dikelola via User Management:");

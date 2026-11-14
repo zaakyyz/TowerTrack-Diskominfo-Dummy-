@@ -41,6 +41,10 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
+    'demo_mode' => (bool) env('DEMO_MODE', false),
+    'demo_seed_password' => env('DEMO_SEED_PASSWORD'),
+    'demo_disable_uploads' => (bool) env('DEMO_DISABLE_UPLOADS', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application URL
