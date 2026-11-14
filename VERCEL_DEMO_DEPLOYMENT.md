@@ -35,6 +35,7 @@ Set these environment variables in the TowerTrack project:
 | `DEMO_SEED_PASSWORD` | A strong private password; do not publish it |
 | `DEMO_DISABLE_UPLOADS` | `true` on Vercel's stateless container |
 | `DEMO_READY` | Leave `false` until setup is finished, then set `true` |
+| `DEMO_READ_ONLY` | `true` to let interviewers explore without changing demo data |
 | `DB_CONNECTION` | `mysql` |
 | `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Credentials for the demo database |
 | `SESSION_DRIVER`, `CACHE_STORE` | `database` after migrations |

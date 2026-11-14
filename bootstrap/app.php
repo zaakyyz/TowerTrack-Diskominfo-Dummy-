@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->web(prepend: [
             \App\Http\Middleware\DemoUnavailable::class,
+            \App\Http\Middleware\DemoReadOnly::class,
         ], append: [
             \App\Http\Middleware\RejectDemoUploads::class,
             \App\Http\Middleware\HandleInertiaRequests::class,

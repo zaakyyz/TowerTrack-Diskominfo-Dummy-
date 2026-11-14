@@ -665,7 +665,7 @@ class FoController extends Controller
 
             // Best Practice: Ensure path_coordinates is up-to-date from points
             // DRY: Use reusable method to update route statistics if path_coordinates is empty
-            if (empty($foRoute->path_coordinates) || count($foRoute->path_coordinates) < 2) {
+            if (!config('app.demo_mode') && (empty($foRoute->path_coordinates) || count($foRoute->path_coordinates) < 2)) {
                 // Generate path_coordinates from points if empty
                 $this->updateFoRouteStatistics($foRoute->id);
                 $foRoute->refresh();
@@ -673,7 +673,9 @@ class FoController extends Controller
 
             // Ensure GeoJSON exists and is up-to-date
             // DRY: Use reusable method to check and generate GeoJSON if needed
-            $geoJsonResult = $this->ensureGeoJsonForRoute($foRoute, 'public');
+            $geoJsonResult = config('app.demo_mode')
+                ? ['needs_generation' => false, 'route' => $foRoute]
+                : $this->ensureGeoJsonForRoute($foRoute, 'public');
             $needsGeneration = $geoJsonResult['needs_generation'];
             $foRoute = $geoJsonResult['route'];
 
@@ -697,7 +699,7 @@ class FoController extends Controller
                 }
             }
 
-            $polyline = $foRoute->hasValidGeoJSON()
+            $polyline = !config('app.demo_mode') && $foRoute->hasValidGeoJSON()
                 ? $foRoute->getGeoJSONCoordinates()
                 : $this->generateEnhancedRoutePolyline($pathCoordinates ?? []);
 

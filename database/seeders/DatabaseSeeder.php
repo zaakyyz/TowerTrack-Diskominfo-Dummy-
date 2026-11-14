@@ -17,8 +17,10 @@ class DatabaseSeeder extends Seeder
             throw new \RuntimeException('DEMO_SEED_PASSWORD must be set before seeding a public demo.');
         }
 
-        // Clean up user-uploaded files from storage before seeding
-        $this->cleanupStorageFiles();
+        // A remote demo seed must never delete uploads from the local checkout.
+        if (!config('app.demo_mode')) {
+            $this->cleanupStorageFiles();
+        }
 
         // Add banned column to users table if it doesn't exist
         $this->call([
