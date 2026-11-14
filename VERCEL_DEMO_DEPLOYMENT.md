@@ -33,6 +33,7 @@ Set these environment variables in the TowerTrack project:
 | `DEMO_MODE` | `true` |
 | `DEMO_SEED_PASSWORD` | A strong private password; do not publish it |
 | `DEMO_DISABLE_UPLOADS` | `true` on Vercel's stateless container |
+| `DEMO_READY` | Leave `false` until setup is finished, then set `true` |
 | `DB_CONNECTION` | `mysql` |
 | `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Credentials for the demo database |
 | `SESSION_DRIVER`, `CACHE_STORE` | `database` after migrations |
@@ -67,5 +68,10 @@ without logging in.
   `APP_URL` and Turnstile hostnames to match and redeploy TowerTrack.
 - Once that URL is healthy, set `NEXT_PUBLIC_TOWERTRACK_URL` in the
   **portfolio** Vercel project to it and redeploy the portfolio.
+
+The Vercel image defaults to `DEMO_READY=false`, which shows a 503 preparation
+message without starting a database-backed session. Keep it in that state
+until the database is migrated and seeded, then set `DEMO_READY=true` in the
+Vercel project and redeploy.
 
 Reference: [Vercel's Laravel container guide](https://vercel.com/kb/guide/laravel-php-with-docker).

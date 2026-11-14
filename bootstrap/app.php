@@ -14,7 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust all proxies (untuk ngrok)
         $middleware->trustProxies(at: '*');
         
-        $middleware->web(append: [
+        $middleware->web(prepend: [
+            \App\Http\Middleware\DemoUnavailable::class,
+        ], append: [
             \App\Http\Middleware\RejectDemoUploads::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
