@@ -300,7 +300,7 @@ function PointDetails({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <p className="text-base font-mono text-foreground">{point.latitude}, {point.longitude}</p>
+                <p className="text-base font-mono text-foreground">{point.latitude.toFixed(8)}, {point.longitude.toFixed(8)}</p>
               </div>
             </div>
             <div className="bg-card rounded-lg p-4 border border-border">
@@ -556,7 +556,7 @@ function RouteDetails({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
-                  <span className="font-mono">{point.latitude}, {point.longitude}</span>
+                  <span className="font-mono">{point.latitude.toFixed(8)}, {point.longitude.toFixed(8)}</span>
                 </div>
                 {(point.images?.isp || point.images?.pole || point.images?.junction_box) && (
                   <div className="flex flex-wrap gap-2">

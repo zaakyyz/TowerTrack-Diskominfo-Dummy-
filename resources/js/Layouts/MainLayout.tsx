@@ -30,7 +30,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       {demoReadOnly && (
         <div role="status" className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-950">
           {demoSurveyCoordinates
-            ? 'Demo portofolio: koordinat menara dan FO berasal dari survei; nama dan rincian lain adalah contoh. Formulir dan perubahan data dinonaktifkan.'
+            ? 'Demo portofolio: koordinat menara dan FO berasal dari survei. Alamat jalan asli, pemilik, dan rincian izin belum tersedia; kecamatan adalah perkiraan. Formulir dan perubahan data dinonaktifkan.'
             : 'Demo portofolio dengan data fiktif. Pengiriman formulir dan perubahan data dinonaktifkan.'}
         </div>
       )}

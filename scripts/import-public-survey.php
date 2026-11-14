@@ -63,14 +63,15 @@ try {
         if (abs($lat) > 90 || abs($lon) > 180) {
             throw new RuntimeException('Invalid tower coordinate at source id '.$tower['id']);
         }
+        $district = KecamatanSemarang::nearest($lat, $lon);
         insert($target, 'towers', [
             'id' => $tower['id'],
             'site_id' => 'MENARA-'.str_pad((string) $tower['id'], 3, '0', STR_PAD_LEFT),
             'site_name' => 'Menara '.str_pad((string) $tower['id'], 3, '0', STR_PAD_LEFT),
             'latitude' => $tower['latitude'],
             'longitude' => $tower['longitude'],
-            'kecamatan' => KecamatanSemarang::nearest($lat, $lon),
-            'alamat_menara' => 'Koordinat survei; alamat rinci tidak ditampilkan.',
+            'kecamatan' => $district,
+            'alamat_menara' => 'Perkiraan Kecamatan '.$district.'; alamat jalan belum tersedia.',
             'created_at' => $now,
             'updated_at' => $now,
         ]);
@@ -95,7 +96,8 @@ try {
             'longitude' => $point['longitude'],
             'route_name' => $point['route_name'],
             'area' => $point['area'],
-            'description' => 'Koordinat survei; nama dan rincian lain merupakan contoh.',
+            'description' => 'Perkiraan Kecamatan '.KecamatanSemarang::nearest($lat, $lon)
+                .'; koordinat survei; alamat jalan belum tersedia.',
             'type' => $point['type'],
             'side_of_road' => 'unknown',
             'status' => $point['status'],

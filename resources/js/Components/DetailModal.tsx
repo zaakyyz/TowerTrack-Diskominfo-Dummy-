@@ -545,7 +545,7 @@ const TowerDetailModal: React.FC<TowerDetailModalProps> = ({
       label: 'Koordinat Latitude',
       formatValue: (value) => {
         if (value === null || value === undefined || value === '') return 'Belum Terdata';
-        return typeof value === 'number' ? value.toFixed(6) : String(value);
+        return typeof value === 'number' ? value.toFixed(8) : String(value);
       }
     },
     { 
@@ -553,7 +553,7 @@ const TowerDetailModal: React.FC<TowerDetailModalProps> = ({
       label: 'Koordinat Longitude',
       formatValue: (value) => {
         if (value === null || value === undefined || value === '') return 'Belum Terdata';
-        return typeof value === 'number' ? value.toFixed(6) : String(value);
+        return typeof value === 'number' ? value.toFixed(8) : String(value);
       }
     },
     { 
@@ -574,7 +574,7 @@ const TowerDetailModal: React.FC<TowerDetailModalProps> = ({
     },
     { id: 'jumlah_pengguna', label: 'Jumlah Pengguna' },
     { id: 'jumlah_kaki', label: 'Jumlah Kaki/Legs' },
-    { id: 'alamat_menara', label: 'Alamat Menara' },
+    { id: 'alamat_menara', label: 'Lokasi / Alamat' },
     { id: 'tower_type', label: 'Jenis Menara' },
     { id: 'site_type', label: 'Tipe Site' },
     { id: 'no_ijin', label: 'Nomor Ijin' },
@@ -596,10 +596,10 @@ const TowerDetailModal: React.FC<TowerDetailModalProps> = ({
       label: 'Koordinat',
       formatValue: () => {
         const lat = typeof tower.latitude === 'number' 
-          ? tower.latitude.toFixed(6) 
+          ? tower.latitude.toFixed(8)
           : tower.latitude || 'Belum Terdata';
         const lng = typeof tower.longitude === 'number' 
-          ? tower.longitude.toFixed(6) 
+          ? tower.longitude.toFixed(8)
           : tower.longitude || 'Belum Terdata';
         return `Lat: ${lat}\nLng: ${lng}`;
       }
@@ -727,12 +727,12 @@ export const FoPointDetailModal: React.FC<FoPointDetailModalProps> = ({
     { 
       id: 'latitude', 
       label: 'Koordinat Latitude',
-      formatValue: (value) => typeof value === 'number' ? value.toFixed(6) : String(value || 'Belum Terdata')
+      formatValue: (value) => typeof value === 'number' ? value.toFixed(8) : String(value || 'Belum Terdata')
     },
     { 
       id: 'longitude', 
       label: 'Koordinat Longitude',
-      formatValue: (value) => typeof value === 'number' ? value.toFixed(6) : String(value || 'Belum Terdata')
+      formatValue: (value) => typeof value === 'number' ? value.toFixed(8) : String(value || 'Belum Terdata')
     }
   ];
 
@@ -782,10 +782,10 @@ export const FoPointDetailModal: React.FC<FoPointDetailModalProps> = ({
       label: 'Koordinat',
       formatValue: () => {
         const lat = typeof point.latitude === 'number' 
-          ? point.latitude.toFixed(6) 
+          ? point.latitude.toFixed(8)
           : point.latitude || 'Belum Terdata';
         const lng = typeof point.longitude === 'number' 
-          ? point.longitude.toFixed(6) 
+          ? point.longitude.toFixed(8)
           : point.longitude || 'Belum Terdata';
         return `Lat: ${lat}\nLng: ${lng}`;
       }

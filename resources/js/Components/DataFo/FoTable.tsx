@@ -219,7 +219,7 @@ export default function FoTable({
                         <div className="text-xs sm:text-sm font-medium text-foreground truncate" title={point.name}>{point.name}</div>
                         <div className="text-xs text-muted-foreground mt-1 truncate" title={point.description}>{point.description}</div>
                         <div className="text-xs text-placeholder mt-1 truncate">
-                          {point.latitude.toFixed(4)}, {point.longitude.toFixed(4)}
+                          {point.latitude.toFixed(8)}, {point.longitude.toFixed(8)}
                         </div>
                       </div>
                     </td>
@@ -388,7 +388,7 @@ export default function FoTable({
                         <div className="text-xs sm:text-sm font-medium text-foreground truncate" title={point.name}>{point.name}</div>
                         <div className="text-xs text-muted-foreground mt-1 truncate" title={point.description}>{point.description}</div>
                         <div className="text-xs text-placeholder mt-1 truncate">
-                          {point.latitude.toFixed(4)}, {point.longitude.toFixed(4)}
+                          {point.latitude.toFixed(8)}, {point.longitude.toFixed(8)}
                         </div>
                       </div>
                     </td>

@@ -37,7 +37,7 @@ export default function TowerTable({
     const str = typeof value === 'string' && value.trim() !== '' && value !== '0' ? value : null;
     
     if (Number.isFinite(num) && num !== 0) {
-      return num.toFixed(6);
+      return num.toFixed(8);
     } else if (str) {
       return str;
     } else {
@@ -56,7 +56,7 @@ export default function TowerTable({
               <th className="px-4 py-3 border-b">Koordinat</th>
               <th className="px-4 py-3 border-b">Tinggi</th>
               <th className="px-4 py-3 border-b">Pemilik</th>
-              <th className="px-4 py-3 border-b">Alamat</th>
+              <th className="px-4 py-3 border-b">Lokasi / Alamat</th>
               <th className="px-4 py-3 border-b text-center">Status</th>
             </tr>
           </thead>
