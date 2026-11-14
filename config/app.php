@@ -46,6 +46,7 @@ return [
     'demo_disable_uploads' => (bool) env('DEMO_DISABLE_UPLOADS', false),
     'demo_ready' => (bool) env('DEMO_READY', true),
     'demo_read_only' => (bool) env('DEMO_READ_ONLY', false),
+    'demo_survey_coordinates' => (bool) env('DEMO_SURVEY_COORDINATES', false),
 
     /*
     |--------------------------------------------------------------------------

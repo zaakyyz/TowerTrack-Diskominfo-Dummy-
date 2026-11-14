@@ -118,3 +118,5 @@ Seeder membaca dua berkas CSV di akar proyek bila tersedia, dan memakai data dum
 | `Pemetaan jalur FO ISP.csv` | Titik-titik jalur fiber optik |
 
 Kedua berkas diabaikan git. **Jangan commit data asli ke repositori ini.**
+
+Untuk demo portofolio yang mendapat izin menampilkan koordinat survei, `scripts/import-public-survey.php` menyalin hanya lokasi menara, titik FO, dan jalur dari database lokal `tagging_tower_kominfo` ke database TiDB terpisah `towertrack_public`. Jalankan hanya setelah migrasi skema dan pengisian `.env.demo.local`. Skrip ini menolak target yang sudah berisi data; akun, laporan, komentar, foto, dan relasi pemilik/provider tidak disalin. Aktifkan `DEMO_SURVEY_COORDINATES=true` untuk memberi label asal data di antarmuka. Jangan jalankan seeder ulang pada database ini karena `DEMO_MODE=true` akan membuat data sintetis.

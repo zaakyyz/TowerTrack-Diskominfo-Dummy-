@@ -36,6 +36,7 @@ Set these environment variables in the TowerTrack project:
 | `DEMO_DISABLE_UPLOADS` | `true` on Vercel's stateless container |
 | `DEMO_READY` | Leave `false` until setup is finished, then set `true` |
 | `DEMO_READ_ONLY` | `true` to let interviewers explore without changing demo data |
+| `DEMO_SURVEY_COORDINATES` | `true` only after importing the approved public survey subset |
 | `DB_CONNECTION` | `mysql` |
 | `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Credentials for the demo database |
 | `SESSION_DRIVER`, `CACHE_STORE` | `database` after migrations |

@@ -16,7 +16,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   currentPage = '',
   headerSlot
 }) => {
-  const { demoReadOnly } = usePage().props as { demoReadOnly?: boolean };
+  const { demoReadOnly, demoSurveyCoordinates } = usePage().props as {
+    demoReadOnly?: boolean;
+    demoSurveyCoordinates?: boolean;
+  };
   return (
     <div className="min-h-screen bg-canvas flex flex-col">
       <Head title={title} />
@@ -26,7 +29,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
 
       {demoReadOnly && (
         <div role="status" className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-950">
-          Demo portofolio dengan data fiktif. Pengiriman formulir dan perubahan data dinonaktifkan.
+          {demoSurveyCoordinates
+            ? 'Demo portofolio: koordinat menara dan FO berasal dari survei; nama dan rincian lain adalah contoh. Formulir dan perubahan data dinonaktifkan.'
+            : 'Demo portofolio dengan data fiktif. Pengiriman formulir dan perubahan data dinonaktifkan.'}
         </div>
       )}
 

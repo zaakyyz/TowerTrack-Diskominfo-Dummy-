@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
             'guestData' => $guestData, // Guest contact data from cookie for auto-fill
             'turnstileSiteKey' => $captchaService->getSiteKey(),
             'demoReadOnly' => config('app.demo_read_only'),
+            'demoSurveyCoordinates' => config('app.demo_survey_coordinates'),
             'csrfToken' => csrf_token(), // CSRF token for axios requests (updates after session regeneration)
         ];
     }
