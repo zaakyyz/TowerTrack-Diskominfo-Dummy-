@@ -19,7 +19,8 @@ Vercel's container runtime is currently beta and runs stateless instances.
 
 Import `zaakyyz/TowerTrack-Diskominfo-Dummy-` as a **new** Vercel project.
 Keep the portfolio as its existing project. The repository's `vercel.json`
-uses a container service and sends all requests to it.
+uses a container service in Singapore (`sin1`) and sends all requests to it.
+Choose a Singapore region for the external database when available.
 
 Set these environment variables in the TowerTrack project:
 
