@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import MainLayout from '@/Layouts/MainLayout';
 
 import FileUpload from '@/Components/FileUpload';
@@ -76,7 +76,7 @@ const MAX_MESSAGE_LENGTH = 1000;
 const MAX_DISTANCE_KM = 1;
 
 export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackCreateProps) {
-  const { errors, auth, turnstileSiteKey } = usePage().props as any;
+  const { errors, auth, turnstileSiteKey, demoReadOnly } = usePage().props as any;
   const isComplainant = !!(auth?.user && auth.user.role === 'complainant');
   const isTowerOwner = !!(auth?.user && auth.user.role === 'tower_owner');
   const isProviderOwner = !!(auth?.user && auth.user.role === 'provider_owner');
@@ -398,6 +398,8 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (demoReadOnly) return;
+
     // Validate form
     if (!validateForm()) {
       setShowValidationSummary(true);
@@ -668,14 +670,20 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
 
       <div className="mx-auto w-full max-w-5xl py-3 sm:py-5">
         <PageHeader
-          title="Kirim Masukan"
-          description="Sampaikan saran atau masukan terkait menara dan jaringan fiber optik di Kabupaten Semarang."
+          title={demoReadOnly ? 'Pratinjau formulir masukan' : 'Kirim Masukan'}
+          description={demoReadOnly
+            ? 'Lihat rancangan formulir masukan terkait menara dan jaringan fiber optik di Kabupaten Semarang.'
+            : 'Sampaikan saran atau masukan terkait menara dan jaringan fiber optik di Kabupaten Semarang.'}
           showLogo={false}
         />
 
         <div className="bg-card rounded-lg border border-border shadow-xs">
           <div className="p-3 sm:p-4 md:p-6">
-            <p className="mb-5 text-sm text-muted-foreground">Kolom bertanda <span className="text-destructive">*</span> wajib diisi.</p>
+            <p className="mb-5 text-sm text-muted-foreground">
+              {demoReadOnly
+                ? 'Formulir ini hanya pratinjau. Pengiriman dinonaktifkan pada demo portofolio.'
+                : <>Kolom bertanda <span className="text-destructive">*</span> wajib diisi.</>}
+            </p>
 
             {isAuthenticatedUser && (
               <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-info-soft border border-info-border rounded-lg">
@@ -697,6 +705,7 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
             )}
 
             <form onSubmit={handleSubmit} noValidate>
+              <fieldset disabled={demoReadOnly} className="m-0 min-w-0 border-0 p-0">
               {showValidationSummary && <FormValidationSummary ref={validationSummaryRef} validation={validation} />}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
                 <div>
@@ -1003,8 +1012,10 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                 </p>
               </div>
 
-              {/* CAPTCHA widget - only for guest users */}
-              {!isAuthenticatedUser && (
+              </fieldset>
+
+              {/* CAPTCHA widget - only for guest users outside the read-only demo */}
+              {!demoReadOnly && !isAuthenticatedUser && (
                 <div className="mb-4 sm:mb-6">
                   <TurnstileCaptcha
                     ref={captchaRef}
@@ -1017,18 +1028,30 @@ export default function FeedbackCreate({ towers = [], foPoints = [] }: FeedbackC
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-2 sm:gap-3 md:gap-4">
-                <AnimatedButton
-                  type="submit"
-                  variant="primary"
-                  size="md"
-                  animation="scale"
-                  loading={isSubmitting}
-                  disabled={isSubmitting || (!isAuthenticatedUser && !captchaToken)}
-                >
-                  {isSubmitting ? 'Mengirim...' : 'Kirim Masukan'}
-                </AnimatedButton>
-              </div>
+              {demoReadOnly ? (
+                <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-muted-foreground">Pengiriman masukan tidak tersedia dalam demo ini.</p>
+                  <Link
+                    href={route('data.tower')}
+                    className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                  >
+                    Jelajahi peta
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-start gap-2 sm:gap-3 md:gap-4">
+                  <AnimatedButton
+                    type="submit"
+                    variant="primary"
+                    size="md"
+                    animation="scale"
+                    loading={isSubmitting}
+                    disabled={isSubmitting || (!isAuthenticatedUser && !captchaToken)}
+                  >
+                    {isSubmitting ? 'Mengirim...' : 'Kirim Masukan'}
+                  </AnimatedButton>
+                </div>
+              )}
             </form>
           </div>
         </div>
