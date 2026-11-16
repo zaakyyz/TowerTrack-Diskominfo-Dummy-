@@ -45,7 +45,7 @@ const onBrand = {
 const AppBar: React.FC<AppBarProps> = ({ currentPage = '' }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const page = usePage();
-  const { auth } = page.props as any;
+  const { auth, demoReadOnly } = page.props as any;
   const user = auth?.user;
 
   // Get current path - use window.location.pathname directly for immediate value
@@ -87,11 +87,10 @@ const AppBar: React.FC<AppBarProps> = ({ currentPage = '' }) => {
   const messageLabel = user && ['complainant', 'tower_owner'].includes(user.role) ? 'Pesan Saya' : 'Pesan Publik';
   links.push({ href: '/my-messages', label: messageLabel, icon: 'message' });
 
-  // Show complaint and feedback form links for non-admin/operator users
-  // Keep them visible for logged-out users so they are encouraged to log in to submit.
+  // Show the form previews without suggesting that the read-only demo accepts submissions.
   if (!isAdminOrOperator) {
-    links.push({ href: '/complaint', label: 'Kirim Keluhan', icon: 'report_problem' });
-    links.push({ href: '/feedback', label: 'Kirim Masukan', icon: 'lightbulb' });
+    links.push({ href: '/complaint', label: demoReadOnly ? 'Form Keluhan' : 'Kirim Keluhan', icon: 'report_problem' });
+    links.push({ href: '/feedback', label: demoReadOnly ? 'Form Masukan' : 'Kirim Masukan', icon: 'lightbulb' });
   }
 
   const toggleMobileMenu = () => {
@@ -286,8 +285,8 @@ const AppBar: React.FC<AppBarProps> = ({ currentPage = '' }) => {
                   </>
                 ) : (
                   <Link href={route('login')} className={cn(onBrand.base, onBrand.cta, 'px-4 py-2')}>
-                    <span className="material-icons-outlined mr-2 text-base lg:text-lg shrink-0">login</span>
-                    <span>Masuk</span>
+                    <span className="material-icons-outlined mr-2 text-base lg:text-lg shrink-0">{demoReadOnly ? 'info' : 'login'}</span>
+                    <span>{demoReadOnly ? 'Info Demo' : 'Masuk'}</span>
                   </Link>
                 )}
               </nav>
@@ -391,8 +390,8 @@ const AppBar: React.FC<AppBarProps> = ({ currentPage = '' }) => {
                     className={cn(onBrand.base, onBrand.cta, 'w-full p-3 text-base')}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <span className="material-icons-outlined mr-3 text-lg">login</span>
-                    <span>Masuk</span>
+                    <span className="material-icons-outlined mr-3 text-lg">{demoReadOnly ? 'info' : 'login'}</span>
+                    <span>{demoReadOnly ? 'Info Demo' : 'Masuk'}</span>
                   </Link>
                 )}
               </li>
