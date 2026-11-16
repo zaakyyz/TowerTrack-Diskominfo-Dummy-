@@ -867,7 +867,9 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
                       <div className="ml-2 sm:ml-3 flex-1">
                         <div className="font-medium text-foreground text-sm sm:text-base">Privat</div>
                         <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">
-                          {isAuthenticatedUser
+                          {demoReadOnly
+                            ? 'Opsi privat tersedia pada aplikasi asli.'
+                            : isAuthenticatedUser
                             ? 'Hanya Anda dan admin yang dapat melihat keluhan ini.'
                             : 'Masuk untuk mengirim keluhan privat.'}
                         </div>
@@ -941,7 +943,9 @@ export default function ComplaintCreate({ towers = [], foPoints = [] }: Complain
               />
 
               <p className="mb-5 text-sm text-muted-foreground">
-                Saat Anda mengirim keluhan, browser akan meminta izin lokasi perangkat untuk memverifikasi kedekatan dengan lokasi yang dipilih. Koordinat yang berhasil diperoleh dicatat untuk proses verifikasi.
+                {demoReadOnly
+                  ? 'Pada aplikasi asli, pengiriman keluhan meminta izin lokasi perangkat untuk memverifikasi kedekatan dengan lokasi yang dipilih.'
+                  : 'Saat Anda mengirim keluhan, browser akan meminta izin lokasi perangkat untuk memverifikasi kedekatan dengan lokasi yang dipilih. Koordinat yang berhasil diperoleh dicatat untuk proses verifikasi.'}
               </p>
 
               <FileUpload
