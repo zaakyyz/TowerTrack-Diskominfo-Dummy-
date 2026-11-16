@@ -28,7 +28,10 @@ export default function Login({
     canResetPassword: boolean;
     showcase?: ShowcaseData;
 }) {
-    const { turnstileSiteKey } = usePage().props as any;
+    const { turnstileSiteKey, demoReadOnly } = usePage().props as {
+        turnstileSiteKey?: string;
+        demoReadOnly?: boolean;
+    };
     const captchaRef = useRef<TurnstileCaptchaRef>(null);
     const [captchaToken, setCaptchaToken] = useState<string>('');
 
@@ -71,6 +74,30 @@ export default function Login({
             },
         });
     };
+
+    if (demoReadOnly) {
+        return (
+            <GuestLayout
+                showcase={showcase}
+                title="Demo publik TowerTrack"
+                subtitle="Jelajahi peta dan data publik"
+            >
+                <Head title="Demo Publik" />
+
+                <div className="space-y-5 rounded-xl border border-border bg-card p-5 shadow-sm">
+                    <p className="text-sm leading-6 text-muted-foreground">
+                        Login admin dan perubahan data tidak tersedia pada versi demo ini.
+                    </p>
+                    <Link
+                        href={route('data.tower')}
+                        className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring focus-visible:ring-offset-2"
+                    >
+                        Jelajahi peta
+                    </Link>
+                </div>
+            </GuestLayout>
+        );
+    }
 
     return (
         <GuestLayout showcase={showcase}>
